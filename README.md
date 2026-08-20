@@ -127,6 +127,12 @@ Tutto è dentro `index.html`, in sezioni numerate e commentate.
 - **Le lettere di partenza.** Sezione `1. DATI` del JS: array `SEEDS`. Le ho
   scritte io come segnaposto — **sostituiscile con testi tuoi o raccolti**, il
   formato è evidente. Le etichette dei due archivi sono nell'oggetto `TAGS`.
+- **Logo.** È il tuo `logo.jpeg`. Dato che il marchio è nero + rosso su bianco e
+  gli archivi hanno fondo rosso e nero, l'immagine è stata separata in due
+  maschere (la scritta e il cuore) incorporate nel CSS: le forme sono le tue,
+  ma il colore lo decide la sezione — nero e rosso su bianco, bianco e nero su
+  rosso, bianco e rosso su nero. Per rigenerarle da un logo nuovo serve solo
+  ripetere la separazione; `logo.jpeg` resta nella cartella come sorgente.
 - **Font.** Titoli, bottoni ed etichette: **Skia**, incorporato nel file in
   base64 (nessuna richiesta esterna, il sito funziona anche offline). Testo da
   leggere: **Georgia**, presente su tutti i sistemi.
