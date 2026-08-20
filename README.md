@@ -28,11 +28,12 @@ quando il file è aperto in locale (`file://`).
 Aggiungendo un parametro all'URL si entra direttamente in una fase:
 
 ```
-tuo-sito.it/index.html                          → landing (dall'inizio)
-tuo-sito.it/index.html?fase=gratta              → direttamente il gratta e vinci
+tuo-sito.it/index.html                          → dall'inizio (strato nero da grattare)
 tuo-sito.it/index.html?fase=scelta              → direttamente amore / paura
 tuo-sito.it/index.html?fase=archivio&tema=amore → direttamente le lettere d'amore
 tuo-sito.it/index.html?fase=archivio&tema=paura → direttamente le lettere sulla paura
+   ...&vista=ventaglio                          → apre l'archivio già sul mazzo di carte
+   ...&vista=registro                           → apre l'archivio sull'indice a righe
 tuo-sito.it/index.html?reset=1                  → cancella le lettere salvate su quel device
 ```
 
@@ -43,11 +44,7 @@ allo stato iniziale.
 
 ## 2. Le 4 fasi, come sono state realizzate
 
-**1 · Landing** — wordmark, una riga di microcopy e un solo bottone `ENTRA`.
-Header (logo + titolo) e footer (copyright + firma) restano fissi in tutte le
-fasi, come coerenza di brand.
-
-**2 · Reveal** — canvas HTML5 con `destination-out`, pennello morbido, pointer
+**1 · Reveal** — è la prima cosa che si vede entrando: canvas HTML5 con `destination-out`, pennello morbido, pointer
 events unificati (funziona con mouse, dito e pennino). Sotto il nero c'è un
 manifesto rosso: *QUANDO AMARE FA PAURA* con l'etimologia. La percentuale di
 area pulita viene misurata campionando il canvas: **superato il 34% lo strato si
@@ -56,19 +53,21 @@ alla fase 3. C'è un `salta →` che compare dopo 5 secondi (serve anche per chi
 non può usare il gesto) e un suono di graffio generato via Web Audio, con
 interruttore in alto a destra.
 
-**3 · Scelta del tema** — ricostruita sullo screenshot di riferimento. Al clic il
-rettangolo si espande a schermo intero nel suo colore e da lì si entra
-nell'archivio. La scelta **è reversibile**: in archivio c'è `← cambia sezione`.
+**2 · Scelta del tema** — ricostruita sullo screenshot di riferimento, solo le
+due scritte senza numeri. Al clic il rettangolo si espande a schermo intero nel
+suo colore e da lì si entra nell'archivio. La scelta **è reversibile**: in
+archivio c'è `← cambia sezione`.
 
-**4 · Archivio** — ibrido dei due riferimenti, con due viste commutabili:
+**3 · Archivio** — ibrido dei due riferimenti, con due viste commutabili:
 
-- **MURO** (rif. every:second): le lettere sono fogli impilati in prospettiva,
-  con i bordi dei fogli sottostanti che si vedono — più risposte ha una lettera,
-  più spesso è il pacchetto. Al passaggio del mouse il foglio si raddrizza e
-  viene avanti.
-- **SCHEDARIO** (rif. immagine 1): cassetti alfabetici con linguette nere
-  `H 003`, voci numerate `001…013`, righe alternate e l'etichetta gialla in
-  basso.
+- **REGISTRO**: indice d'archivio a righe sottili — numero, etichetta, data,
+  titolo. La riga attiva si apre in un blocco pieno con l'estratto e la firma;
+  si sposta col mouse, con il dito o con il Tab. Il puntino `···` in alto a
+  destra apre la lettera intera.
+- **VENTAGLIO**: il mazzo di carte del tuo mockup, centrato e simmetrico. La
+  prima carta è `scrivi una lettera`, le altre si aprono ai due lati schiarendo
+  via via. Si trascina col dito o col mouse, si scorre con le frecce e con la
+  rotella, la carta al centro si apre con un clic o con Invio.
 
 A destra le etichette con contatore (stile sidebar di every:second), la
 dimensione del testo cresce col numero di lettere. In alto: `scrivi una
@@ -83,7 +82,7 @@ Sono scelte, non vincoli: si cambiano tutte in poche righe.
 
 | Domanda | Scelta |
 |---|---|
-| Microcopy prima del bottone? | Sì, tre righe brevi |
+| Serve una landing prima del gratta? | No: si entra direttamente sullo strato nero |
 | Soglia autocompletamento | 34% dell'area (3 passate su desktop, 4-5 col dito) — variabile `thr` nel codice |
 | Cosa c'è sotto il nero | manifesto rosso con l'etimologia di *filofobia* |
 | Suono / vibrazione | suono di graffio + campanella all'apertura, vibrazione su mobile; interruttore visibile |
@@ -128,10 +127,18 @@ Tutto è dentro `index.html`, in sezioni numerate e commentate.
 - **Le lettere di partenza.** Sezione `1. DATI` del JS: array `SEEDS`. Le ho
   scritte io come segnaposto — **sostituiscile con testi tuoi o raccolti**, il
   formato è evidente. Le etichette dei due archivi sono nell'oggetto `TAGS`.
-- **Font.** `Archivo` (bold da manifesto), `Instrument Serif` italic (sottotitoli
-  e firma), `JetBrains Mono` (numeri e micro-etichette), da Google Fonts. Se il
-  progetto ha già i suoi font, si sostituisce il `<link>` e le tre variabili
-  `--font-*`.
+- **Font.** Titoli, bottoni ed etichette: **Skia**, incorporato nel file in
+  base64 (nessuna richiesta esterna, il sito funziona anche offline). Testo da
+  leggere: **Georgia**, presente su tutti i sistemi.
+  Da sapere: il file `Skia.ttf` che hai scaricato contiene **solo il taglio
+  Regular** — nessun asse variabile, quindi il *Black Extended* non c'è. Il
+  neretto dei titoli è sintetizzato dal browser e ho aggiunto un contorno
+  sottilissimo (`--dstroke`, in cima al CSS) per restituire il peso da
+  manifesto. Se trovi il vero taglio Black Extended, si sostituisce solo il
+  blocco `@font-face` e si azzera `--dstroke`.
+  Il font viene da onlinewebfonts.com con licenza CC BY 4.0 che chiede il
+  credito: il rimando è nel commento sopra il `@font-face`, valuta se metterlo
+  anche in una pagina di crediti.
 - **Numeri delle lettere.** `001, 002…` assegnati per data di arrivo: la lettera
   numero 1 è la più vecchia dell'archivio, come in uno schedario reale.
 
