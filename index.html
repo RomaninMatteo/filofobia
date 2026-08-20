@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>filofobia: quando amare fa paura — POST del cuore</title>
+<meta name="description" content="Installazione digitale. Un archivio di lettere anonime sull'amore e sulla paura di amare. A cura di Luna Cucchiaro, 2025/26.">
+<meta name="theme-color" content="#EC1C24">
+<meta property="og:title" content="filofobia: quando amare fa paura">
+<meta property="og:description" content="Installazione digitale — POST del cuore. Scegli quello che senti più vicino in questo momento.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23EC1C24' d='M12 21.5S2 15 2 8.4C2 4.9 4.7 2.6 7.5 2.6c1.9 0 3.6 1 4.5 2.6.9-1.6 2.6-2.6 4.5-2.6C19.3 2.6 22 4.9 22 8.4 22 15 12 21.5 12 21.5z'/%3E%3Ccircle cx='9' cy='8.4' r='1.5' fill='%23fff'/%3E%3Ccircle cx='15' cy='8.4' r='1.5' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+/* =========================================================
+   FILOFOBIA — POST del cuore
+   Installazione digitale in 4 fasi. File unico, nessuna dipendenza.
+   ========================================================= */
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+h1,h2,h3,h4,p,figure{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+button{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer}
+input,textarea,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+:root{
+  /* palette — vedi README per la sostituzione dell'hex esatto del rosso */
+  --red:#EC1C24;
+  --ink:#0B0B0B;
+  --paper:#FFFFFF;
+  --paper-2:#F1EFEA;
+  --yellow:#F6E45F;
+  --accent:var(--red);
+  --on-accent:#FFFFFF;
+
+  --font-sans:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --font-serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --pad:clamp(15px,4.4vw,32px);
+  --col:min(560px,100%);
+  --e:cubic-bezier(.2,.7,.25,1);
+  --rule:2px;
+}
+
+/* L'archivio della paura ribalta l'intera installazione: fondo nero, inchiostro
+   chiaro, rosso come unico accento. Per tornare al fondo bianco basta
+   eliminare questo blocco. */
+body[data-theme="paura"]{
+  --paper:#0B0B0B;
+  --ink:#F3F0EA;
+  --paper-2:#161513;
+  --accent:#EC1C24;
+}
+
+body{
+  margin:0;
+  font-family:var(--font-sans);
+  color:var(--ink);
+  background:var(--paper);
+  height:100vh;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .7s var(--e),color .7s var(--e);
+}
+
+/* grana tipografica leggera su tutta l'installazione */
+.grain{
+  position:fixed;inset:0;z-index:9990;pointer-events:none;opacity:.4;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+}
+body[data-theme="paura"] .grain{mix-blend-mode:screen;opacity:.16}
+
+/* ================= HEADER / FOOTER DI BRAND (fissi in tutte le fasi) ===== */
+.brand{
+  flex:0 0 auto;position:relative;z-index:60;
+  padding:calc(var(--pad)*.75) var(--pad) 9px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+}
+.brand::after{content:"";position:absolute;left:var(--pad);right:var(--pad);bottom:0;height:var(--rule);background:currentColor}
+.wm{line-height:1.02}
+.wm-t{display:block;color:var(--red);font-weight:800;letter-spacing:-.035em;font-size:clamp(15px,3.7vw,19px)}
+.wm-s{display:block;margin-top:1px;color:var(--red);font-family:var(--font-serif);font-style:italic;font-size:clamp(12.5px,3.2vw,16px);letter-spacing:.005em}
+
+.logo{display:grid;justify-items:end;line-height:.9;font-weight:900;letter-spacing:-.045em;font-size:clamp(17px,4.5vw,22px);flex:0 0 auto}
+.logo-1{position:relative;padding-right:15px}
+.logo-heart{position:absolute;right:-3px;top:-7px;width:15px;height:14px;overflow:visible}
+.logo-2{margin-top:-.04em}
+
+.brandfoot{
+  flex:0 0 auto;position:relative;z-index:60;
+  padding:9px var(--pad) calc(var(--pad)*.7);
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+}
+.brandfoot::before{content:"";position:absolute;left:var(--pad);right:var(--pad);top:0;height:1px;background:currentColor;opacity:.18}
+.copy{color:var(--red);font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(9.5px,2.6vw,12px)}
+.sign{font-family:var(--font-serif);font-style:italic;font-size:clamp(12px,3.1vw,15px);white-space:nowrap}
+
+/* ================= SCENE / ROUTER ======================================= */
+#stage{position:relative;flex:1 1 auto;min-height:0}
+.scene{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(14px);
+  transition:opacity .5s var(--e),transform .55s var(--e),visibility .55s;
+}
+.scene.on{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.scroller{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0}
+.wrap{width:var(--col);margin-inline:auto;padding-inline:var(--pad)}
+.wrap-wide{width:min(1180px,100%);margin-inline:auto;padding-inline:var(--pad)}
+
+/* ================= FASE 1 — LANDING ==================================== */
+.landing{justify-content:center;align-items:center;text-align:center;padding:var(--pad) 0}
+.landing .wrap{display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.6vh,26px)}
+
+.deck{position:relative;width:clamp(120px,34vw,168px);height:clamp(58px,16vw,80px);margin-bottom:2px}
+.deck i{
+  position:absolute;inset:0;border:1.7px solid var(--ink);border-radius:7px;background:var(--paper);
+  animation:float 6s var(--e) infinite;
+}
+.deck i:nth-child(1){transform:rotate(-9deg) translate(-10px,6px);animation-delay:0s}
+.deck i:nth-child(2){transform:rotate(-3deg) translate(-3px,3px);animation-delay:.35s}
+.deck i:nth-child(3){transform:rotate(4deg) translate(5px,0);background:var(--red);border-color:var(--red);animation-delay:.7s}
+.deck i:nth-child(4){transform:rotate(11deg) translate(13px,-4px);animation-delay:1.05s}
+@keyframes float{0%,100%{margin-top:0}50%{margin-top:-7px}}
+
+.big{
+  color:var(--red);font-weight:900;text-transform:lowercase;
+  font-size:clamp(46px,15vw,116px);line-height:.84;letter-spacing:-.055em;
+}
+.big-sub{font-family:var(--font-serif);font-style:italic;color:var(--red);font-size:clamp(19px,6vw,38px);line-height:1.02;letter-spacing:.005em}
+.kicker{font-family:var(--font-mono);font-size:clamp(9px,2.4vw,10.5px);letter-spacing:.32em;text-transform:uppercase;opacity:.62}
+.lead{max-width:31ch;font-weight:600;font-size:clamp(13.5px,3.5vw,16px);line-height:1.45;opacity:.86;text-wrap:balance}
+
+.cta{
+  display:inline-flex;align-items:center;gap:14px;
+  background:var(--ink);color:var(--paper);
+  padding:16px 22px 16px 28px;border-radius:999px;
+  font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:clamp(12.5px,3.3vw,14.5px);
+  transition:background-color .35s var(--e),transform .35s var(--e),gap .35s var(--e);
+}
+.cta:hover{background:var(--red);transform:translateY(-2px);gap:20px}
+.cta:active{transform:translateY(0)}
+.cta svg{width:17px;height:12px;flex:0 0 auto}
+
+/* ================= FASE 2 — REVEAL / GRATTA ============================ */
+.reveal{overflow:hidden}
+.under{
+  position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+  background:var(--red);color:#fff;padding:calc(var(--pad)*1.2);
+  transform:scale(1);transition:transform 2.4s var(--e);
+}
+.reveal.done .under{transform:scale(1.045)}
+.under-in{max-width:min(680px,100%)}
+.under .kicker{color:#fff;opacity:.85}
+.huge{
+  font-weight:900;text-transform:uppercase;margin-top:clamp(10px,2vh,18px);
+  font-size:clamp(36px,11.5vw,92px);line-height:.86;letter-spacing:-.05em;
+}
+.huge em{font-style:normal;color:var(--ink);display:inline-block}
+.etym{
+  font-family:var(--font-serif);font-style:italic;
+  font-size:clamp(14px,3.7vw,21px);line-height:1.32;margin-top:clamp(14px,2.6vh,22px);
+  max-width:36ch;margin-inline:auto;opacity:.95;
+}
+#scratch{position:absolute;left:0;top:0;width:100%;height:100%;z-index:3;touch-action:none;cursor:crosshair;transition:opacity .6s var(--e)}
+.reveal.done #scratch{cursor:default}
+.rev-ui{
+  position:absolute;left:0;right:0;bottom:0;z-index:5;
+  padding:var(--pad);display:flex;flex-direction:column;gap:9px;
+  color:#fff;pointer-events:none;
+}
+.rev-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.rev-lab{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.8;mix-blend-mode:difference}
+.rev-bar{height:3px;background:rgba(255,255,255,.24);border-radius:2px;overflow:hidden}
+.rev-bar i{display:block;height:100%;width:0;background:#fff;transition:width .3s var(--e)}
+.rev-skip{
+  pointer-events:auto;font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  border-bottom:1px solid currentColor;padding-bottom:2px;opacity:0;transition:opacity .6s;
+}
+.rev-skip.show{opacity:.75}
+.rev-skip:hover{opacity:1}
+.snd{
+  position:absolute;top:var(--pad);right:var(--pad);z-index:6;pointer-events:auto;
+  width:38px;height:38px;border:1.5px solid rgba(255,255,255,.55);border-radius:50%;
+  display:grid;place-items:center;color:#fff;mix-blend-mode:difference;
+}
+.snd svg{width:17px;height:17px}
+.snd .off{display:none}
+.snd[aria-pressed="false"] .on-i{display:none}
+.snd[aria-pressed="false"] .off{display:block}
+
+/* ================= FASE 3 — SCELTA DEL TEMA ============================ */
+.choice{padding:clamp(10px,2.4vh,22px) 0 clamp(12px,2.6vh,24px)}
+.choice .wrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:clamp(12px,2.4vh,22px)}
+.choice h2{
+  color:var(--red);text-align:center;font-weight:900;text-transform:uppercase;
+  font-size:clamp(23px,7.3vw,42px);line-height:1;letter-spacing:-.02em;
+}
+.instr{
+  text-align:center;font-weight:800;letter-spacing:-.015em;
+  font-size:clamp(17px,5vw,27px);line-height:1.14;max-width:21ch;margin-inline:auto;text-wrap:balance;
+}
+.choices{display:flex;flex-direction:column;gap:clamp(14px,3.2vh,32px);flex:1 1 auto;min-height:0}
+.choice-card{
+  position:relative;overflow:hidden;flex:1 1 0;min-height:104px;
+  border-radius:clamp(11px,2.6vw,18px);display:grid;place-items:center;
+  color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
+  font-size:clamp(14.5px,4.3vw,22px);text-align:center;padding:18px;
+  transition:transform .4s var(--e),box-shadow .4s var(--e);
+}
+.choice-card[data-t="amore"]{background:var(--red)}
+.choice-card[data-t="paura"]{background:#0B0B0B}
+.choice-card::after{
+  content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 120%,rgba(255,255,255,.18),transparent 60%);
+  opacity:0;transition:opacity .45s var(--e);
+}
+.choice-card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(11,11,11,.22)}
+.choice-card:hover::after{opacity:1}
+.choice-card .cc-n,.choice-card .cc-c{position:absolute;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;opacity:.7;text-transform:uppercase}
+.choice-card .cc-n{left:13px;top:11px}
+.choice-card .cc-c{right:13px;bottom:11px}
+
+#veil{position:fixed;z-index:9200;pointer-events:none;opacity:0;display:grid;place-items:center}
+#veil .veil-t{color:#fff;font-weight:900;text-transform:uppercase;letter-spacing:.1em;font-size:clamp(15px,4.4vw,26px);opacity:0;transition:opacity .3s}
+
+/* ================= FASE 4 — ARCHIVIO =================================== */
+.arc{padding-top:clamp(10px,2vh,18px)}
+.arc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:clamp(8px,1.6vh,14px)}
+.back{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  opacity:.6;display:inline-flex;align-items:center;gap:7px;transition:opacity .25s,gap .25s
+}
+.back:hover{opacity:1;gap:11px}
+.tick{text-align:right;line-height:1.15;flex:0 0 auto}
+.tick b{display:block;font-weight:800;font-size:clamp(11px,2.9vw,13px);letter-spacing:-.01em}
+.tick span{display:block;font-family:var(--font-mono);font-size:clamp(9.5px,2.5vw,11px);opacity:.6}
+
+.arc-title{
+  color:var(--accent);font-weight:900;text-transform:uppercase;
+  font-size:clamp(26px,7.6vw,58px);line-height:.9;letter-spacing:-.04em;
+}
+.arc-sub{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin-top:8px;padding-bottom:11px;border-bottom:var(--rule) solid currentColor;
+  font-family:var(--font-mono);font-size:clamp(9.5px,2.5vw,11px);letter-spacing:.1em;text-transform:uppercase;
+}
+.arc-sub .everysec{opacity:.45}
+
+.arc-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:13px 0 4px}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1.6px solid var(--ink);border-radius:999px;padding:10px 17px;
+  font-weight:800;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;
+  transition:background-color .3s var(--e),color .3s var(--e),transform .3s var(--e),border-color .3s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-acc{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-acc:hover{filter:brightness(1.07)}
+.btn-ghost:hover{background:var(--ink);color:var(--paper)}
+.seg{display:inline-flex;border:1.4px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{
+  padding:8px 13px;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  opacity:.55;transition:background-color .25s,color .25s,opacity .25s;
+}
+.seg button.on{background:var(--ink);color:var(--paper);opacity:1}
+.search{
+  flex:1 1 150px;min-width:130px;border:1.4px solid var(--ink);border-radius:999px;background:transparent;
+  padding:9px 15px;font-size:12.5px;font-weight:600;outline:none;
+}
+.search::placeholder{opacity:.42;font-weight:500}
+
+.arc-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding-top:14px;padding-bottom:clamp(30px,8vh,70px)}
+#arcMain{min-width:0}
+@media(min-width:920px){
+  .arc-grid{grid-template-columns:minmax(0,1fr) 196px;gap:38px}
+  .side{position:sticky;top:6px;align-self:start}
+}
+
+/* ---- vista MURO: fogli impilati in prospettiva (rif. every second) ---- */
+.wall{position:relative;perspective:1700px;perspective-origin:80% 42%;padding:60px 34px 6px 22px}
+.wall-rail{
+  position:absolute;left:0;top:2px;writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;opacity:.4;
+}
+.wall-list{transform-style:preserve-3d}
+.sheet{
+  --sbg:var(--paper);--sln:var(--ink);--x:0;
+  position:relative;display:block;width:100%;text-align:left;
+  background:var(--sbg);color:var(--ink);border:1.6px solid var(--sln);border-radius:7px;
+  padding:13px 15px 14px;margin-bottom:23px;
+  transform:translateX(calc(var(--x) * 1px)) rotateY(-12deg) rotateX(1.4deg);
+  transform-origin:left center;
+  box-shadow:0 7px 0 -3px var(--sbg),0 7px 0 -2px var(--sln),0 14px 0 -6px var(--sbg),0 14px 0 -5px var(--sln);
+  transition:transform .45s var(--e),box-shadow .45s var(--e),background-color .35s,border-color .35s;
+  will-change:transform;
+}
+.sheet.s3{box-shadow:0 7px 0 -3px var(--sbg),0 7px 0 -2px var(--sln),0 14px 0 -6px var(--sbg),0 14px 0 -5px var(--sln),0 21px 0 -9px var(--sbg),0 21px 0 -8px var(--sln)}
+.sheet.s1{box-shadow:0 7px 0 -3px var(--sbg),0 7px 0 -2px var(--sln)}
+.sheet:hover,.sheet:focus-visible{transform:translateX(0) rotateY(-2deg) translateZ(52px);z-index:5}
+.sheet.fill{--sbg:var(--accent);--sln:var(--accent);color:#fff}
+.sheet.fresh{animation:pop .85s var(--e)}
+@keyframes pop{from{opacity:0;transform:translateX(0) rotateY(0deg) translateZ(90px)}}
+
+.sheet-top{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.65}
+.sheet-top .dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;flex:0 0 auto}
+.sheet-title{font-weight:800;font-size:clamp(15px,4vw,19.5px);line-height:1.13;letter-spacing:-.025em;margin:6px 0 5px;padding-right:26px}
+.sheet-ex{
+  font-family:var(--font-serif);font-size:clamp(14px,3.6vw,16px);line-height:1.38;opacity:.8;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.sheet-bot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:9px;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;opacity:.6}
+.sheet-plus{
+  position:absolute;right:11px;top:11px;width:23px;height:23px;border:1.4px solid currentColor;border-radius:50%;
+  display:grid;place-items:center;font-size:14px;line-height:0;opacity:0;transition:opacity .3s;
+}
+.sheet:hover .sheet-plus{opacity:.75}
+@media(max-width:620px){
+  .wall{perspective:1100px;padding:34px 8px 6px 0}
+  .wall-rail{display:none}
+  .sheet{transform:translateX(calc(var(--x) * .45px)) rotateY(-6deg)}
+  .sheet:hover,.sheet:focus-visible{transform:translateX(0) rotateY(0deg) translateZ(26px)}
+}
+
+/* ---- barra laterale: etichette con contatore (rif. immagine 2) ---- */
+.side-h{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;opacity:.5;margin-bottom:9px;text-align:right}
+.tags{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.tag{
+  font-weight:800;letter-spacing:-.03em;line-height:1.06;text-align:right;opacity:.5;
+  transition:opacity .22s,color .22s,transform .22s var(--e);
+}
+.tag:hover{opacity:1;transform:translateX(-3px)}
+.tag.on{opacity:1;color:var(--accent)}
+.tag sup{font-family:var(--font-mono);font-weight:400;font-size:.5em;margin-left:3px;opacity:.75}
+.side-note{margin-top:22px;text-align:right;font-size:10.5px;line-height:1.45;opacity:.45;font-weight:500}
+.side-foot{text-align:right;margin-top:9px}
+.wipe{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.4;border-bottom:1px solid currentColor}
+.wipe:hover{opacity:.9}
+@media(max-width:919px){
+  .side{border-top:1px solid currentColor;padding-top:13px}
+  .side-h{text-align:left}
+  .tags{flex-direction:row;align-items:center;flex-wrap:nowrap;overflow-x:auto;gap:7px;padding-bottom:5px;scrollbar-width:none}
+  .tags::-webkit-scrollbar{display:none}
+  .tag{font-size:12.5px !important;border:1.3px solid currentColor;border-radius:999px;padding:6px 11px;white-space:nowrap;flex:0 0 auto;opacity:.55}
+  .tag.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .side-note,.side-foot{text-align:left}
+}
+
+/* ---- vista SCHEDARIO (rif. immagine 1) ---- */
+.sched{background:var(--paper-2);border:1.7px solid var(--ink);border-radius:9px;padding:clamp(13px,3vw,26px) clamp(9px,2.4vw,20px) 0;position:relative;overflow:hidden}
+.sched-g{margin-bottom:5px}
+.sched-tab{
+  display:inline-flex;align-items:center;gap:18px;background:var(--ink);color:var(--paper);
+  font-weight:800;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  padding:5px 20px 5px 13px;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 100%,0 100%);
+}
+.sched-tab i{font-family:var(--font-mono);font-style:normal;font-weight:500;opacity:.75;letter-spacing:.06em}
+.sched-row{
+  width:100%;display:flex;align-items:center;gap:14px;
+  border:1.4px solid var(--ink);border-bottom:0;border-radius:15px 15px 0 0;
+  padding:9px 17px;background:var(--paper-2);text-align:left;
+  transition:transform .28s var(--e),background-color .28s;
+}
+.sched-row:hover{transform:translateY(-2px);background:var(--paper)}
+.sched-row .n{font-family:var(--font-mono);font-size:11.5px;opacity:.65;flex:0 0 auto;min-width:32px}
+.sched-row .t{font-weight:600;font-size:13.5px;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sched-row .a{margin-left:auto;font-family:var(--font-mono);font-size:10px;opacity:.5;flex:0 0 auto}
+.sched-row.alt{margin-left:clamp(14px,4vw,34px);flex-direction:row-reverse;text-align:right}
+.sched-row.alt .a{margin-left:0;margin-right:auto}
+.sched-base{height:20px;border:1.7px solid var(--ink);border-radius:0 0 7px 7px;background:var(--paper-2);margin:0 calc(clamp(9px,2.4vw,20px) * -1)}
+.sched-label{
+  display:block;width:max-content;margin:15px auto clamp(18px,4vh,30px);
+  background:var(--yellow);color:#0B0B0B;font-weight:800;font-size:11.5px;letter-spacing:.05em;
+  padding:6px 15px;border-radius:4px;box-shadow:0 2px 0 rgba(11,11,11,.28);
+}
+.empty{padding:36px 6px;text-align:center;font-family:var(--font-serif);font-style:italic;font-size:17px;opacity:.55;line-height:1.5}
+
+/* ================= MODALI: LETTURA E SCRITTURA ========================= */
+.modal{position:fixed;inset:0;z-index:9300;display:grid;place-items:end center;opacity:0;visibility:hidden;transition:opacity .4s var(--e),visibility .4s}
+.modal.on{opacity:1;visibility:visible}
+.modal-bg{position:absolute;inset:0;background:rgba(11,11,11,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.modal-card{
+  position:relative;width:min(700px,100%);max-height:92dvh;overflow-y:auto;
+  background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:18px 18px 0 0;
+  padding:clamp(20px,4.4vw,38px);transform:translateY(26px);transition:transform .45s var(--e);
+}
+.modal.on .modal-card{transform:none}
+@media(min-width:760px){
+  .modal{place-items:center;padding:24px}
+  .modal-card{border-radius:16px}
+}
+.x{
+  position:absolute;right:clamp(12px,2.6vw,20px);top:clamp(12px,2.6vw,20px);
+  width:34px;height:34px;border:1.5px solid currentColor;border-radius:50%;display:grid;place-items:center;
+  font-size:15px;line-height:0;opacity:.55;transition:opacity .25s,transform .25s
+}
+.x:hover{opacity:1;transform:rotate(90deg)}
+.m-top{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;padding-right:40px}
+.m-title{font-weight:900;font-size:clamp(21px,5.6vw,34px);line-height:1.04;letter-spacing:-.035em;margin:11px 0 14px;padding-right:34px}
+.m-body{font-family:var(--font-serif);font-size:clamp(16.5px,4.2vw,20px);line-height:1.52}
+.m-body p+p{margin-top:.72em}
+.m-sign{margin-top:18px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;opacity:.6;text-transform:uppercase}
+.m-rule{height:1px;background:currentColor;opacity:.16;margin:22px 0 18px}
+.rep-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.55;margin-bottom:12px}
+.rep{border-left:2.5px solid var(--accent);padding:2px 0 2px 14px;margin-bottom:15px}
+.rep p{font-family:var(--font-serif);font-size:16px;line-height:1.45}
+.rep i{display:block;font-style:normal;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;opacity:.55;margin-top:6px}
+.m-nav{display:flex;justify-content:space-between;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid rgba(128,128,128,.28)}
+.m-nav button{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;transition:opacity .25s}
+.m-nav button:hover{opacity:1}
+.m-nav button[disabled]{opacity:.2;cursor:default}
+
+.field{margin-bottom:17px}
+.field label{display:block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;opacity:.55;margin-bottom:6px}
+.inp{
+  width:100%;background:transparent;border:0;border-bottom:1.6px solid currentColor;
+  padding:8px 0;font-weight:700;font-size:16px;letter-spacing:-.01em;outline:none;
+}
+.inp::placeholder{opacity:.32;font-weight:500}
+.ta{
+  width:100%;background:transparent;border:1.6px solid currentColor;border-radius:10px;padding:13px 14px;
+  min-height:180px;resize:vertical;outline:none;
+  font-family:var(--font-serif);font-size:17.5px;line-height:1.5;
+}
+.ta::placeholder{opacity:.32}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.3px solid currentColor;border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;opacity:.5;transition:all .25s var(--e)}
+.chip:hover{opacity:.85}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);opacity:1}
+.f-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:22px}
+.count{font-family:var(--font-mono);font-size:10.5px;opacity:.5}
+.count.warn{color:var(--red);opacity:1}
+.care{font-family:var(--font-serif);font-style:italic;font-size:14.5px;line-height:1.45;opacity:.6;margin:-4px 0 18px;max-width:46ch}
+.err{color:var(--red);font-weight:700;font-size:12.5px;margin-top:10px;min-height:1em}
+
+#toast{
+  position:fixed;left:50%;bottom:26px;z-index:9600;transform:translate(-50%,22px);
+  background:var(--ink);color:var(--paper);padding:12px 22px;border-radius:999px;
+  font-weight:700;font-size:12.5px;letter-spacing:.02em;opacity:0;pointer-events:none;
+  transition:opacity .35s var(--e),transform .35s var(--e);max-width:calc(100% - 32px);text-align:center;
+}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s !important;transition-duration:.14s !important}
+  .sheet{transform:none !important}
+  .wall{perspective:none}
+  .deck i{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ HEADER DI BRAND (fisso in tutte le fasi) ============ -->
+<header class="brand">
+  <div class="wm">
+    <span class="wm-t">filofobia:</span>
+    <span class="wm-s">quando amare fa paura</span>
+  </div>
+  <a class="logo" href="#inizio" data-nav="landing" aria-label="post del cuore — torna all inizio">
+    <span class="logo-1">post<svg class="logo-heart" viewBox="0 0 24 22" aria-hidden="true"><path fill="#EC1C24" d="M12 21.2S1.6 14.6 1.6 8.1C1.6 4.6 4.3 2.3 7.1 2.3c2 0 3.7 1 4.9 2.7 1.2-1.7 2.9-2.7 4.9-2.7 2.8 0 5.5 2.3 5.5 5.8 0 6.5-10.4 13.1-10.4 13.1z"/><circle cx="9" cy="8.2" r="1.6" fill="#fff"/><circle cx="15" cy="8.2" r="1.6" fill="#fff"/></svg></span>
+    <span class="logo-2">del cuore</span>
+  </a>
+</header>
+
+<main id="stage">
+
+  <!-- ============ FASE 1 — LANDING ============ -->
+  <section class="scene landing" id="sc-landing" aria-labelledby="t-landing">
+    <div class="wrap">
+      <div class="deck" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <p class="kicker">installazione digitale &middot; 2025/26</p>
+      <h1 id="t-landing" class="big">filofobia<span class="big-sub" style="display:block;margin-top:.12em">quando amare fa paura</span></h1>
+      <p class="lead">Qui dentro ci sono lettere scritte da persone che non hanno trovato il coraggio di dirlo ad alta voce. Puoi leggerle, puoi risponderne una, puoi lasciarne una tua.</p>
+      <button class="cta" id="btnEnter">
+        entra
+        <svg viewBox="0 0 24 12" fill="none" aria-hidden="true"><path d="M0 6h21M16 1l5 5-5 5" stroke="currentColor" stroke-width="1.8"/></svg>
+      </button>
+      <p class="kicker" style="opacity:.42">nessun account &middot; nessun nome &middot; solo parole</p>
+    </div>
+  </section>
+
+  <!-- ============ FASE 2 — REVEAL INTERATTIVO ============ -->
+  <section class="scene reveal" id="sc-reveal" aria-labelledby="t-reveal">
+    <div class="under" aria-hidden="false">
+      <div class="under-in">
+        <p class="kicker">post del cuore presenta</p>
+        <h2 id="t-reveal" class="huge">quando<br><em>amare</em><br>fa paura</h2>
+        <p class="etym">dal greco <span style="font-style:normal">philos</span>, amore, e <span style="font-style:normal">phobos</span>, paura. La stessa cosa, guardata da due lati.</p>
+      </div>
+    </div>
+    <canvas id="scratch" role="img" aria-label="Strato nero da grattare per scoprire cosa c'è sotto"></canvas>
+    <button class="snd" id="btnSnd" aria-pressed="true" aria-label="Attiva o disattiva il suono">
+      <svg class="on-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 9v6h3l5 4V5L7 9H4z" fill="currentColor" stroke="none"/><path d="M16 8.5c1.4 1 1.4 6 0 7M19 6c2.6 2 2.6 10 0 12"/></svg>
+      <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 9v6h3l5 4V5L7 9H4z" fill="currentColor" stroke="none"/><path d="M16 9l6 6M22 9l-6 6"/></svg>
+    </button>
+    <div class="rev-ui">
+      <div class="rev-row">
+        <span class="rev-lab" id="revLab">gratta per scoprire</span>
+        <button class="rev-skip" id="btnSkip">salta &rarr;</button>
+      </div>
+      <div class="rev-bar"><i id="revBar"></i></div>
+    </div>
+  </section>
+
+  <!-- ============ FASE 3 — SCELTA DEL TEMA ============ -->
+  <section class="scene choice" id="sc-choice" aria-labelledby="t-choice">
+    <div class="wrap">
+      <h2 id="t-choice">installazione digitale</h2>
+      <p class="instr">Scegli quello che senti più vicino in questo momento.</p>
+      <div class="choices">
+        <button class="choice-card" data-t="amore">
+          <span class="cc-n">01</span>
+          lettere d&rsquo;amore
+          <span class="cc-c" data-count="amore"></span>
+        </button>
+        <button class="choice-card" data-t="paura">
+          <span class="cc-n">02</span>
+          lettere sulla paura
+          <span class="cc-c" data-count="paura"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FASE 4 — ARCHIVIO ============ -->
+  <section class="scene arc" id="sc-arc" aria-labelledby="arcTitle">
+    <div class="scroller">
+      <div class="wrap-wide">
+        <div class="arc-top">
+          <button class="back" data-nav="choice"><span aria-hidden="true">&larr;</span> cambia sezione</button>
+          <div class="tick"><b id="tickD">&nbsp;</b><span id="tickT">&nbsp;</span></div>
+        </div>
+        <h2 class="arc-title" id="arcTitle">lettere</h2>
+        <div class="arc-sub">
+          <span id="arcCount"></span>
+          <span class="everysec">ogni : secondo</span>
+        </div>
+        <div class="arc-tools">
+          <button class="btn btn-acc" id="btnWrite">scrivi una lettera</button>
+          <div class="seg" id="segView" role="group" aria-label="Vista archivio">
+            <button data-view="muro" class="on">muro</button><button data-view="schedario">schedario</button>
+          </div>
+          <div class="seg" id="segSort" role="group" aria-label="Ordina">
+            <button data-sort="recenti" class="on">recenti</button><button data-sort="risposte">risposte</button><button data-sort="casuale">casuale</button>
+          </div>
+          <input class="search" id="q" type="search" placeholder="cerca nell'archivio" aria-label="Cerca nell archivio">
+        </div>
+        <div class="arc-grid">
+          <div id="arcMain"></div>
+          <aside class="side">
+            <p class="side-h">etichette</p>
+            <div class="tags" id="tags"></div>
+            <p class="side-note">Prototipo senza server: le lettere che scrivi restano su questo dispositivo.</p>
+            <p class="side-foot"><button class="wipe" id="btnWipe">svuota archivio locale</button></p>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER DI BRAND ============ -->
+<footer class="brandfoot">
+  <span class="copy">&copy; 2025/26 post&#8314; del cuore</span>
+  <span class="sign">Luna Cucchiaro</span>
+</footer>
+
+<div id="veil" aria-hidden="true"><span class="veil-t"></span></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ MODALE: LETTURA DI UNA LETTERA ============ -->
+<div class="modal" id="reader" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card">
+    <button class="x" data-close aria-label="Chiudi">&times;</button>
+    <div class="m-top" id="rTop"></div>
+    <h2 class="m-title" id="rTitle"></h2>
+    <div class="m-body" id="rBody"></div>
+    <p class="m-sign" id="rSign"></p>
+    <div class="m-rule"></div>
+    <p class="rep-h" id="rRepH">risposte</p>
+    <div id="rReps"></div>
+    <form id="fRep" autocomplete="off">
+      <div class="field">
+        <label for="repBody">lascia una risposta a questa lettera</label>
+        <textarea class="ta" id="repBody" maxlength="600" style="min-height:104px;font-size:16px" placeholder="Scrivi qualcosa di gentile, o solo che hai capito."></textarea>
+      </div>
+      <div class="f-foot" style="margin-top:8px">
+        <span class="count" id="repCount">0 / 600</span>
+        <button class="btn btn-acc" type="submit">pubblica risposta</button>
+      </div>
+      <p class="err" id="repErr"></p>
+    </form>
+    <div class="m-nav">
+      <button id="rPrev">&larr; lettera precedente</button>
+      <button id="rNext">lettera successiva &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODALE: SCRITTURA DI UNA LETTERA ============ -->
+<div class="modal" id="writer" role="dialog" aria-modal="true" aria-labelledby="wTitle">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card">
+    <button class="x" data-close aria-label="Chiudi">&times;</button>
+    <p class="m-top">nuova lettera &middot; <span id="wTheme"></span></p>
+    <h2 class="m-title" id="wTitle">Scrivi una lettera</h2>
+    <p class="care" id="wCare"></p>
+    <form id="fLet" autocomplete="off">
+      <div class="field">
+        <label for="wTit">titolo <span style="opacity:.5">(facoltativo)</span></label>
+        <input class="inp" type="text" id="wTit" maxlength="60" placeholder="Il caffè della domenica">
+      </div>
+      <div class="field">
+        <label for="wBody">la tua lettera</label>
+        <textarea class="ta" id="wBody" maxlength="1200" placeholder="Non serve che sia bella. Serve che sia vera."></textarea>
+      </div>
+      <div class="field">
+        <label>etichetta</label>
+        <div class="chips" id="wChips"></div>
+      </div>
+      <div class="field">
+        <label for="wAuth">firma <span style="opacity:.5">(o lascia vuoto: sarai anonimo)</span></label>
+        <input class="inp" type="text" id="wAuth" maxlength="24" placeholder="anonimo">
+      </div>
+      <div class="f-foot">
+        <span class="count" id="wCount">0 / 1200</span>
+        <button class="btn btn-acc" type="submit">pubblica nell&rsquo;archivio</button>
+      </div>
+      <p class="err" id="wErr"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   1. DATI
+   Le lettere di partenza sono scritte nel file (l'archivio non nasce vuoto).
+   Le lettere e le risposte del pubblico finiscono in localStorage.
+   ========================================================================= */
+
+const TAGS = {
+  amore: ["primo amore","non detto","ritorni","distanza","sguardi","lettere mai spedite","gratitudine","dopo"],
+  paura: ["abbandono","vulnerabilità","sabotaggio","silenzio","attaccamento","fuga","gelosia","ricominciare"]
+};
+
+const SEEDS = [
+/* ---------------------------------- AMORE -------------------------------- */
+{id:"a01",theme:"amore",tag:"gratitudine",author:"m.",title:"Il caffè della domenica",createdAt:"2026-06-14T09:12:00",
+body:"Mi hai insegnato che l'amore non è la parte grande. È che la domenica ti alzi prima di me e metti su il caffè, e poi torni a letto ad aspettare che l'odore mi svegli.\n\nNon l'ho mai detto a nessuno perché detto così sembra niente. Ma quando ho paura che finisca penso a quello: alla tazza già pronta, girata con il manico verso di me perché sai che sono mancina.",
+replies:[{id:"a01r1",author:"anonimo",createdAt:"2026-06-15T22:41:00",body:"Ho letto la cosa del manico girato e ho dovuto chiudere il telefono per un minuto."}]},
+
+{id:"a02",theme:"amore",tag:"non detto",author:"anonimo",title:"Non te l'ho mai detto",createdAt:"2026-06-21T23:40:00",
+body:"Abbiamo condiviso quattro anni di autobus, la stessa fermata, lo stesso freddo. Ti ho fatto ridere ogni singolo giorno e non ti ho mai detto perché ci provavo così tanto.\n\nOra sei a Berlino e io sono ancora a quella fermata. Non è un rimpianto: è solo una cosa che esiste, e mi sembrava giusto che esistesse anche scritta da qualche parte."},
+
+{id:"a03",theme:"amore",tag:"ritorni",author:"l.c.",title:"Sei arrivato tardi",createdAt:"2026-07-02T18:05:00",
+body:"Sei tornato dopo due anni con la faccia di chi non ha mai chiesto scusa. Il problema è che ti ho aperto.\n\nNon per debolezza: volevo vedere se ero ancora quella che ti aspettava. Non lo ero, ed è la cosa più bella che mi sia capitata quest'anno.",
+replies:[{id:"a03r1",author:"anonimo",createdAt:"2026-07-03T08:15:00",body:"Aprire la porta per scoprire di non essere più in casa. Grazie, mi serviva."}]},
+
+{id:"a04",theme:"amore",tag:"distanza",author:"una che aspetta",title:"Trecento chilometri",createdAt:"2026-07-08T21:30:00",
+body:"Trecento chilometri, un treno alle 6:40, il regionale che sa di ferro. Faccio questa cosa ogni due venerdì da un anno e mezzo.\n\nLa gente mi chiede se ne vale la pena e io non so mai rispondere, perché la risposta è troppo semplice: sì. Vale la pena anche solo per i venti minuti in cui ti vedo cercarmi in mezzo alla gente e non mi hai ancora trovata.",
+replies:[
+{id:"a04r1",author:"pendolare anche io",createdAt:"2026-07-09T07:02:00",body:"I venti minuti prima di essere trovati sono i migliori di tutta la settimana. Lo confermo."},
+{id:"a04r2",author:"anonimo",createdAt:"2026-07-11T19:20:00",body:"Ho fatto quei treni per tre anni. Poi ci siamo sposati. Non è una promessa, è solo per dire che a volte finisce bene."}]},
+
+{id:"a05",theme:"amore",tag:"primo amore",author:"anonimo",title:"Il tuo nome sul citofono",createdAt:"2026-07-11T14:20:00",
+body:"Avevo sedici anni e passavo davanti al tuo portone per leggere il tuo cognome sul citofono. Tutto lì. Non ti ho mai suonato.\n\nA volte penso che tutte le storie che ho avuto dopo siano state un modo di suonare quel citofono con vent'anni di ritardo."},
+
+{id:"a06",theme:"amore",tag:"lettere mai spedite",author:"r.",title:"Lettera che non spedirò",createdAt:"2026-07-19T02:11:00",
+body:"Ti scrivo per dirti che sto bene, e non è vero, ma sto imparando.\n\nTi scrivo per dirti che ho tenuto la tua maglia e che non la indosso: la tengo nel cassetto come si tiene una prova.\n\nTi scrivo per dirti che se un giorno mi cerchi ti risponderò, e questa è l'unica frase di cui mi vergogno."},
+
+{id:"a07",theme:"amore",tag:"sguardi",author:"23 anni",title:"Ti ho visto ridere",createdAt:"2026-07-26T19:48:00",
+body:"Terzo piano, biblioteca, tavolo vicino alla finestra. Hai riso da sola guardando il telefono e ti sei subito guardata intorno per controllare se qualcuno ti aveva vista.\n\nIo ti avevo vista. Sono tre settimane che studio a quel tavolo sperando che tu rida di nuovo."},
+
+{id:"a08",theme:"amore",tag:"gratitudine",author:"anonimo",title:"Grazie per il lunedì",createdAt:"2026-08-01T08:02:00",
+body:"Non siamo mai stati insieme, e va bene. Ma per due anni, ogni lunedì mattina, mi hai mandato un messaggio per dirmi che ce l'avremmo fatta anche quella settimana.\n\nNon credo tu sappia quante volte quel messaggio è arrivato nel momento esatto in cui non ce la facevo."},
+
+{id:"a09",theme:"amore",tag:"dopo",author:"s.",title:"Dopo di te",createdAt:"2026-08-05T22:14:00",
+body:"La cosa che nessuno ti dice è che dopo non smetti di amare: smetti solo di avere un posto dove metterlo.\n\nPer mesi ho continuato a comprare il pane che piaceva a te. Adesso compro il mio. Sembra poco, ma è tutto.",
+replies:[{id:"a09r1",author:"anonimo",createdAt:"2026-08-06T13:38:00",body:"Io sono ancora nella fase del pane sbagliato. Ci arriverò."}]},
+
+{id:"a10",theme:"amore",tag:"primo amore",author:"g.",title:"La prima volta che mi hai chiamato per nome",createdAt:"2026-08-09T17:33:00",
+body:"Ero il ragazzo del banco in fondo, quello che nessuno chiamava. Tu sei arrivata a ottobre e il secondo giorno mi hai chiamato per nome, ad alta voce, davanti a tutti.\n\nNon è successo niente di più, in dodici anni. Ma ho imparato lì che essere chiamati per nome è già una forma di amore."},
+
+{id:"a11",theme:"amore",tag:"sguardi",author:"anonimo",title:"Mia madre dice che si vede",createdAt:"2026-08-14T13:07:00",
+body:"Mia madre dice che si vede quando guardo il telefono e ci sei tu. Dice che faccio una faccia che non ho mai fatto per nessuno.\n\nLe ho risposto male, come si fa a ventisei anni. Poi sono andata in bagno e ho pianto, perché ha ragione e mi fa una paura enorme.",
+replies:[{id:"a11r1",author:"anonimo",createdAt:"2026-08-15T09:11:00",body:"Le madri lo vedono sempre prima. È fastidiosissimo e va bene così."}]},
+
+{id:"a12",theme:"amore",tag:"non detto",author:"chi ti conosce",title:"Se leggi questa",createdAt:"2026-08-19T10:26:00",
+body:"Se leggi questa saprai che sei tu, perché ti ho descritto un milione di volte e non ti ho mai nominato.\n\nNon voglio niente. Volevo solo che una volta nella vita qualcuno scrivesse di te in un posto pubblico, e che tu passassi per caso e ti sentissi vista."},
+
+/* ---------------------------------- PAURA -------------------------------- */
+{id:"p01",theme:"paura",tag:"sabotaggio",author:"anonimo",title:"Scappo prima che tu lo faccia",createdAt:"2026-06-11T01:20:00",
+body:"Il mio schema è sempre lo stesso: sto bene, sto troppo bene, e poi cerco un motivo. Un messaggio letto tardi, una frase detta male. Costruisco l'uscita mentre siamo ancora dentro.\n\nNon ho paura di essere lasciata. Ho paura di non essere quella che decide.",
+replies:[
+{id:"p01r1",author:"anonimo",createdAt:"2026-06-12T00:44:00",body:"Costruire l'uscita mentre siamo ancora dentro. Non avevo mai avuto le parole per dirlo."},
+{id:"p01r2",author:"f.",createdAt:"2026-06-14T18:50:00",body:"Lo faccio da dieci anni. La prima volta che sono rimasta è stato più difficile di tutte le fughe insieme. Ma sono rimasta."}]},
+
+{id:"p02",theme:"paura",tag:"vulnerabilità",author:"n.",title:"Ho paura di essere troppo",createdAt:"2026-06-18T23:02:00",
+body:"Conto i messaggi. Se ne ho mandati due di fila mi fermo. Rileggo tre volte prima di scrivere mi manchi e alla fine scrivo tutto ok.\n\nHo passato dieci anni a rendermi più piccola per stare nelle stanze di persone che non mi avevano chiesto niente."},
+
+{id:"p03",theme:"paura",tag:"silenzio",author:"anonimo",title:"Il silenzio delle 23:47",createdAt:"2026-06-29T23:47:00",
+body:"C'è un'ora precisa in cui la paura arriva. Non è quando litighiamo: è quando è tutto tranquillo e tu dormi e io sto sveglia a chiedermi da quanto tempo va bene, e quanto può durare una cosa che va bene."},
+
+{id:"p04",theme:"paura",tag:"fuga",author:"f.",title:"Non rispondo ai messaggi belli",createdAt:"2026-07-04T16:15:00",
+body:"Ai messaggi brutti rispondo in trenta secondi. A quelli belli metto due giorni.\n\nUn'amica me l'ha fatto notare e mi sono arrabbiata con lei. Ci ho pensato per un mese. Aveva ragione: rispondere a un messaggio bello vuol dire ammettere che mi ha fatto piacere.",
+replies:[{id:"p04r1",author:"anonimo",createdAt:"2026-07-05T11:09:00",body:"Ammettere che ci ha fatto piacere è la cosa più esposta che esista. Ti capisco."}]},
+
+{id:"p05",theme:"paura",tag:"abbandono",author:"anonimo",title:"Mio padre è andato via a marzo",createdAt:"2026-07-10T20:38:00",
+body:"Mio padre è andato via a marzo, io avevo nove anni, e per tutta la vita ho pensato che fosse per come sono fatta.\n\nOra ne ho trentuno e ogni volta che qualcuno prende la valigia per un viaggio di lavoro io controllo l'armadio, per vedere se ha lasciato le camicie. Le lascia sempre. Non è mai abbastanza."},
+
+{id:"p06",theme:"paura",tag:"gelosia",author:"una qualunque",title:"Controllo l'ultimo accesso",createdAt:"2026-07-15T00:55:00",
+body:"Non sono gelosa di lei. Sono gelosa dell'idea che qualcuno possa dargli una cosa che io non so dare.\n\nÈ un pensiero che mi fa schifo e lo scrivo qui perché è l'unico posto dove nessuno mi guarda in faccia mentre lo dico."},
+
+{id:"p07",theme:"paura",tag:"vulnerabilità",author:"p.",title:"Se mi vedi davvero, mi lasci",createdAt:"2026-07-22T19:09:00",
+body:"Sono bravissimo nei primi tre mesi: divertente, presente, attento. Poi comincia la parte in cui una persona ti vede davvero, e lì di solito trovo un lavoro in un'altra città.\n\nHo fatto due traslochi in quattro anni e li ho chiamati entrambi opportunità."},
+
+{id:"p08",theme:"paura",tag:"sabotaggio",author:"anonimo",title:"Ho detto che non ero pronta",createdAt:"2026-07-28T12:40:00",
+body:"Ho detto che non ero pronta. Era vero e non era vero: ero pronta per lui, non ero pronta per il rischio che fosse davvero la cosa giusta e che poi finisse comunque.\n\nPreferire il niente al forse è la cosa più stupida che ho fatto, e la rifarei ancora. Questa è la parte che mi spaventa."},
+
+{id:"p09",theme:"paura",tag:"ricominciare",author:"m.t.",title:"Ricominciare a trentaquattro anni",createdAt:"2026-08-03T09:26:00",
+body:"Trentaquattro anni, un divorzio, un cane in affido condiviso.\n\nLa cosa che nessuno dice è che dopo non hai paura delle persone nuove: hai paura di te. Di scoprire che sceglieresti di nuovo la stessa cosa sbagliata, solo perché la riconosci.",
+replies:[{id:"p09r1",author:"anonimo",createdAt:"2026-08-04T22:30:00",body:"Riconoscere non è amare. Me lo ripeto ogni giorno da due anni e qualche volta funziona."}]},
+
+{id:"p10",theme:"paura",tag:"attaccamento",author:"anonimo",title:"Ti chiamo amico così non fa male",createdAt:"2026-08-08T21:11:00",
+body:"Ti chiamo amico da sei anni. Ti chiamo amico ai miei genitori, ai miei colleghi, a me stesso alle tre di notte.\n\nFinché resta una parola piccola non può rompersi niente."},
+
+{id:"p11",theme:"paura",tag:"silenzio",author:"b.",title:"Ho paura del suo silenzio, non del mio",createdAt:"2026-08-12T18:29:00",
+body:"Quando non risponde per due ore, il mio corpo lo sa prima della mia testa: stomaco, mani, respiro corto.\n\nHo fatto un anno di terapia per imparare che due ore sono due ore e non un abbandono. Certi giorni funziona.",
+replies:[
+{id:"p11r1",author:"anonimo",createdAt:"2026-08-13T07:55:00",body:"Certi giorni funziona è già enorme. Nessuno ci dice che il traguardo è quello."},
+{id:"p11r2",author:"d.",createdAt:"2026-08-16T20:12:00",body:"Anche a me il corpo lo sa prima. Ho imparato a dirgli: non è oggi, non è lui. A volte mi crede."}]},
+
+{id:"p12",theme:"paura",tag:"ricominciare",author:"anonimo",title:"Non so stare senza avere paura",createdAt:"2026-08-18T07:44:00",
+body:"Sto imparando che la paura non se ne va: si sposta. Prima era paura che non arrivasse nessuno, ora è paura che quello che è arrivato mi conosca.\n\nVa bene, credo. Se aspetto di non avere paura non parto mai."}
+];
+
+/* =========================================================================
+   2. STATO, PERSISTENZA, UTILITÀ
+   ========================================================================= */
+const KEY = "postdelcuore.filofobia.v1";
+
+const state = {
+  scene:"landing", theme:null, view:"muro", sort:"recenti", tag:"tutte", q:"",
+  mine:[], reps:{}, order:null, nums:{}, openId:null, freshId:null, lastFocus:null, wTag:null
+};
+
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.prototype.slice.call((r||document).querySelectorAll(s));
+
+const ESCM = {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>ESCM[c]); }
+function paras(txt){
+  return esc(txt).split(/\n{2,}/).map(p=>"<p>"+p.replace(/\n/g,"<br>")+"</p>").join("");
+}
+function excerpt(txt,n){
+  const t=String(txt).replace(/\s+/g," ").trim();
+  return t.length>n ? t.slice(0,n).replace(/\s+\S*$/,"")+"…" : t;
+}
+function pad3(n){ return String(n).padStart(3,"0"); }
+
+function when(iso){
+  const d=new Date(iso), s=(Date.now()-d.getTime())/1000;
+  if(s<60) return "adesso";
+  if(s<3600){ const m=Math.floor(s/60); return m<=1?"un minuto fa":m+" minuti fa"; }
+  if(s<86400){ const h=Math.floor(s/3600); return h<=1?"un'ora fa":h+" ore fa"; }
+  const g=Math.floor(s/86400);
+  if(g===1) return "ieri";
+  if(g<7) return g+" giorni fa";
+  return d.toLocaleDateString("it-IT",{day:"2-digit",month:"short"});
+}
+function fullDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"})+
+    " · "+d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+}
+function vibrate(ms){
+  try{
+    if(navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+    if(navigator.vibrate) navigator.vibrate(ms);
+  }catch(e){}
+}
+
+let toastT=null;
+function toast(msg){
+  const t=$("#toast"); if(!t) return;
+  t.textContent=msg; t.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"),3600);
+}
+
+function loadStore(){
+  try{
+    const raw=localStorage.getItem(KEY); if(!raw) return;
+    const d=JSON.parse(raw);
+    if(Array.isArray(d.mine)) state.mine=d.mine;
+    if(d.reps && typeof d.reps==="object") state.reps=d.reps;
+  }catch(e){ /* storage non disponibile: si lavora in memoria */ }
+}
+function saveStore(){
+  try{ localStorage.setItem(KEY, JSON.stringify({mine:state.mine, reps:state.reps})); }
+  catch(e){ toast("Non riesco a salvare su questo dispositivo."); }
+}
+function letters(){ return SEEDS.concat(state.mine); }
+function forTheme(t){ return letters().filter(l=>l.theme===t); }
+function repsOf(l){ return (l.replies||[]).concat(state.reps[l.id]||[]); }
+function byId(id){ return letters().filter(l=>l.id===id)[0]; }
+function themeLabel(t){ return t==="amore" ? "lettere d’amore" : "lettere sulla paura"; }
+
+/* =========================================================================
+   3. AUDIO (generato, nessun file esterno)
+   ========================================================================= */
+const audio = {
+  ctx:null, on:true, buf:null,
+  init(){
+    if(this.ctx) return this.ctx;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return null;
+    try{ this.ctx=new AC(); }catch(e){ return null; }
+    const n=Math.floor(this.ctx.sampleRate*.6);
+    const b=this.ctx.createBuffer(1,n,this.ctx.sampleRate), d=b.getChannelData(0);
+    for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*.75;
+    this.buf=b;
+    return this.ctx;
+  },
+  scratch(){
+    if(!this.on) return; const c=this.init(); if(!c) return;
+    if(c.state==="suspended"){ try{ c.resume(); }catch(e){} }
+    const s=c.createBufferSource(); s.buffer=this.buf; s.loop=true;
+    const f=c.createBiquadFilter(); f.type="bandpass";
+    f.frequency.value=750+Math.random()*1500; f.Q.value=.85;
+    const g=c.createGain(), t=c.currentTime;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(.055,t+.014);
+    g.gain.exponentialRampToValueAtTime(.0008,t+.15);
+    s.connect(f); f.connect(g); g.connect(c.destination);
+    s.start(t, Math.random()*.3); s.stop(t+.17);
+  },
+  chime(){
+    if(!this.on) return; const c=this.init(); if(!c) return;
+    if(c.state==="suspended"){ try{ c.resume(); }catch(e){} }
+    [523.25,783.99].forEach((hz,i)=>{
+      const o=c.createOscillator(), g=c.createGain(), t=c.currentTime+i*.15;
+      o.type="sine"; o.frequency.value=hz;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.linearRampToValueAtTime(.075,t+.02);
+      g.gain.exponentialRampToValueAtTime(.0008,t+.95);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+1);
+    });
+  },
+  toggle(){
+    this.on=!this.on;
+    $("#btnSnd").setAttribute("aria-pressed", this.on?"true":"false");
+    if(this.on){ this.init(); toast("Suono attivo."); } else { toast("Suono disattivato."); }
+  }
+};
+
+/* =========================================================================
+   4. ROUTER DELLE 4 FASI
+   ========================================================================= */
+const SCENES={landing:"#sc-landing", reveal:"#sc-reveal", choice:"#sc-choice", archive:"#sc-arc"};
+
+function go(name){
+  if(!SCENES[name]) return;
+  const prev=state.scene;
+  state.scene=name;
+  Object.keys(SCENES).forEach(k=>$(SCENES[k]).classList.toggle("on", k===name));
+  if(prev==="reveal" && name!=="reveal") rev.stop();
+  if(name==="reveal") rev.start();
+  if(name==="landing" || name==="choice"){ setTheme(null); }
+  if(name==="choice") choiceCounts();
+  if(name==="archive") renderArc();
+  const sec=$(SCENES[name]);
+  if(sec){ sec.setAttribute("tabindex","-1"); try{ sec.focus({preventScroll:true}); }catch(e){} }
+  syncUrl();
+}
+function setTheme(t){
+  state.theme=t;
+  if(t) document.body.setAttribute("data-theme",t);
+  else document.body.removeAttribute("data-theme");
+  const m=$('meta[name="theme-color"]');
+  if(m) m.setAttribute("content", t==="paura" ? "#0B0B0B" : "#EC1C24");
+}
+function syncUrl(){
+  try{
+    const h="#/"+state.scene+(state.theme?("/"+state.theme):"");
+    history.replaceState(null,"",location.pathname+location.search+h);
+  }catch(e){}
+}
+
+/* =========================================================================
+   5. FASE 2 — STRATO DA GRATTARE
+   Canvas + destination-out. Superata la soglia, si apre da solo.
+   ========================================================================= */
+const rev = {
+  cv:null, ctx:null, samp:null, sctx:null,
+  dpr:1, w:0, h:0, drawing:false, done:false, mounted:false,
+  last:null, marks:[], ratio:0, thr:.34, tS:0, tA:0, raf:0, skipT:null,
+
+  get r(){ return Math.max(24, Math.min(66, Math.min(this.w,this.h)*.078)); },
+
+  mount(){
+    this.cv=$("#scratch"); if(!this.cv) return;
+    this.ctx=this.cv.getContext("2d");
+    this.samp=document.createElement("canvas"); this.samp.width=64; this.samp.height=64;
+    try{ this.sctx=this.samp.getContext("2d",{willReadFrequently:true}); }
+    catch(e){ this.sctx=this.samp.getContext("2d"); }
+    this.cv.addEventListener("pointerdown", e=>this.down(e));
+    this.cv.addEventListener("pointermove", e=>this.move(e));
+    window.addEventListener("pointerup", ()=>this.up());
+    window.addEventListener("pointercancel", ()=>this.up());
+    window.addEventListener("resize", ()=>{ if(state.scene==="reveal") this.resize(false); });
+    if(window.ResizeObserver){
+      this.ro=new ResizeObserver(()=>{ if(state.scene==="reveal") this.resize(false); });
+      this.ro.observe(this.cv);
+    }
+    this.mounted=true;
+  },
+  start(){
+    if(!this.mounted) this.mount();
+    this.done=false; this.ratio=0; this.marks=[]; this.last=null; this.drawing=false;
+    this.cv.style.opacity="1";
+    $("#sc-reveal").classList.remove("done");
+    $("#revBar").style.width="0%";
+    $("#revLab").textContent="gratta per scoprire";
+    this.resize(true);
+    requestAnimationFrame(()=>{ if(state.scene==="reveal") this.resize(true); });
+    clearTimeout(this.skipT);
+    $("#btnSkip").classList.remove("show");
+    this.skipT=setTimeout(()=>$("#btnSkip").classList.add("show"), 5200);
+  },
+  stop(){
+    clearTimeout(this.skipT); clearTimeout(this.safeT);
+    cancelAnimationFrame(this.raf); this.drawing=false;
+  },
+
+  resize(force){
+    const r=this.cv.getBoundingClientRect();
+    const w=Math.max(1,Math.round(r.width)), h=Math.max(1,Math.round(r.height));
+    if(!force && w===this.w && Math.abs(h-this.h)<130) return;
+    let old=null;
+    if(!force && this.cv.width>0){
+      old=document.createElement("canvas");
+      old.width=this.cv.width; old.height=this.cv.height;
+      old.getContext("2d").drawImage(this.cv,0,0);
+    }
+    this.dpr=Math.min(2, window.devicePixelRatio||1);
+    this.w=w; this.h=h;
+    this.cv.width=Math.round(w*this.dpr);
+    this.cv.height=Math.round(h*this.dpr);
+    this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+    if(old && !this.done && this.marks.length>0){
+      const x=this.ctx;
+      x.save(); x.setTransform(1,0,0,1,0,0);
+      x.globalCompositeOperation="copy";
+      x.drawImage(old,0,0,this.cv.width,this.cv.height);
+      x.restore();
+    } else {
+      this.paint();
+    }
+  },
+
+  paint(){
+    const x=this.ctx, w=this.w, h=this.h;
+    x.setTransform(this.dpr,0,0,this.dpr,0,0);
+    x.globalCompositeOperation="source-over";
+    x.fillStyle="#0B0B0B"; x.fillRect(0,0,w,h);
+    const dots=Math.min(9000, Math.round(w*h/700));
+    for(let i=0;i<dots;i++){
+      x.fillStyle="rgba(255,255,255,"+(Math.random()*.045+.008).toFixed(3)+")";
+      x.fillRect(Math.random()*w, Math.random()*h, 1.5, 1.5);
+    }
+    const fs=Math.max(19, Math.min(46, w*.072));
+    x.textAlign="center"; x.textBaseline="middle";
+    x.fillStyle="rgba(255,255,255,.36)";
+    x.font="800 "+fs+"px Archivo, Helvetica, Arial, sans-serif";
+    x.fillText("GRATTA VIA IL NERO", w/2, h/2-fs*.18);
+    x.fillStyle="rgba(255,255,255,.22)";
+    x.font="500 "+Math.max(10,Math.min(13.5,w*.03))+"px JetBrains Mono, monospace";
+    x.fillText("trascina il dito o il mouse", w/2, h/2+fs*.8);
+    x.strokeStyle="rgba(255,255,255,.15)"; x.lineWidth=1.2;
+    x.setLineDash([5,8]);
+    x.beginPath(); x.arc(w/2,h/2, Math.min(w,h)*.36, 0, Math.PI*2); x.stroke();
+    x.setLineDash([]);
+  },
+
+  pos(e){ const r=this.cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; },
+  stamp(x,y,rad){
+    const r=rad||this.r, c=this.ctx;
+    const g=c.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,"rgba(0,0,0,1)");
+    g.addColorStop(.78,"rgba(0,0,0,1)");
+    g.addColorStop(1,"rgba(0,0,0,0)");
+    c.globalCompositeOperation="destination-out";
+    c.fillStyle=g;
+    c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fill();
+    c.globalCompositeOperation="source-over";
+  },
+  line(a,b){
+    if(!a){ this.stamp(b.x,b.y); return; }
+    const d=Math.hypot(b.x-a.x,b.y-a.y), step=Math.max(3,this.r*.28), n=Math.max(1,Math.ceil(d/step));
+    for(let i=1;i<=n;i++) this.stamp(a.x+(b.x-a.x)*i/n, a.y+(b.y-a.y)*i/n);
+  },
+  down(e){
+    if(this.done) return;
+    try{ this.cv.setPointerCapture(e.pointerId); }catch(err){}
+    this.drawing=true;
+    const p=this.pos(e);
+    this.last=p; this.marks.push(p);
+    this.stamp(p.x,p.y);
+    audio.scratch();
+  },
+  move(e){
+    if(!this.drawing || this.done) return;
+    const p=this.pos(e);
+    this.line(this.last,p);
+    this.last=p;
+    if(this.marks.length<600) this.marks.push(p);
+    const now=performance.now();
+    if(now-this.tA>62){ this.tA=now; audio.scratch(); }
+    if(now-this.tS>110){ this.tS=now; this.sample(); }
+  },
+  up(){
+    if(!this.drawing) return;
+    this.drawing=false; this.last=null;
+    if(!this.done) this.sample();
+  },
+  sample(){
+    try{
+      this.sctx.clearRect(0,0,64,64);
+      this.sctx.drawImage(this.cv,0,0,64,64);
+      const d=this.sctx.getImageData(0,0,64,64).data;
+      let c=0;
+      for(let i=3;i<d.length;i+=4) if(d[i]<70) c++;
+      this.ratio=c/4096;
+    }catch(e){
+      this.ratio=Math.min(1,this.ratio+.035);
+    }
+    const p=Math.min(1,this.ratio/this.thr);
+    $("#revBar").style.width=(p*100).toFixed(1)+"%";
+    const lab=$("#revLab");
+    if(this.ratio>=this.thr){ this.finish(); }
+    else if(this.ratio>.05){ lab.textContent="continua…"; }
+  },
+  centroid(){
+    if(!this.marks.length) return {x:this.w/2, y:this.h/2};
+    let sx=0, sy=0;
+    this.marks.forEach(m=>{ sx+=m.x; sy+=m.y; });
+    return {x:sx/this.marks.length, y:sy/this.marks.length};
+  },
+  finish(){
+    if(this.done) return;
+    this.done=true; this.drawing=false;
+    clearTimeout(this.skipT);
+    $("#btnSkip").classList.remove("show");
+    $("#revLab").textContent="si apre da sola";
+    $("#revBar").style.width="100%";
+    $("#sc-reveal").classList.add("done");
+    audio.chime(); vibrate(26);
+    const c=this.centroid(), maxR=Math.hypot(this.w,this.h)*1.15;
+    const extra=[];
+    for(let i=0;i<3;i++){
+      extra.push(this.marks[Math.floor(Math.random()*this.marks.length)] || c);
+    }
+    const t0=performance.now(), dur=900;
+    const step=(t)=>{
+      const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);
+      this.stamp(c.x, c.y, Math.max(1, maxR*e*.68));
+      extra.forEach((m,i)=>{
+        const ee=Math.max(0, e-.1*(i+1));
+        if(ee>0) this.stamp(m.x, m.y, maxR*ee*.44);
+      });
+      if(k<1){ this.raf=requestAnimationFrame(step); }
+      else {
+        this.cv.style.opacity="0";
+        setTimeout(()=>{ if(state.scene==="reveal") go("choice"); }, 660);
+      }
+    };
+    this.raf=requestAnimationFrame(step);
+    /* rete di sicurezza: se requestAnimationFrame non gira (tab in background,
+       browser che non compone frame) si passa comunque alla fase successiva */
+    clearTimeout(this.safeT);
+    this.safeT=setTimeout(()=>{
+      if(state.scene==="reveal"){ this.cv.style.opacity="0"; go("choice"); }
+    }, dur+1250);
+  }
+};
+
+/* =========================================================================
+   6. FASE 3 — SCELTA DEL TEMA (il bottone si espande a schermo intero)
+   ========================================================================= */
+function choiceCounts(){
+  $$("[data-count]").forEach(el=>{
+    const t=el.getAttribute("data-count");
+    el.textContent=forTheme(t).length+" lettere";
+  });
+}
+function pick(card){
+  const t=card.getAttribute("data-t");
+  const r=card.getBoundingClientRect();
+  const v=$("#veil"), lab=$(".veil-t",v);
+  v.style.transition="none";
+  v.style.left=r.left+"px"; v.style.top=r.top+"px";
+  v.style.width=r.width+"px"; v.style.height=r.height+"px";
+  v.style.borderRadius=getComputedStyle(card).borderRadius;
+  v.style.background = t==="amore" ? "#EC1C24" : "#0B0B0B";
+  v.style.opacity="1";
+  lab.textContent=themeLabel(t); lab.style.opacity="0";
+  requestAnimationFrame(()=>{
+    v.style.transition="left .6s cubic-bezier(.2,.7,.25,1),top .6s cubic-bezier(.2,.7,.25,1),width .6s cubic-bezier(.2,.7,.25,1),height .6s cubic-bezier(.2,.7,.25,1),border-radius .6s ease,opacity .45s .5s";
+    v.style.left="0px"; v.style.top="0px";
+    v.style.width="100%"; v.style.height="100%";
+    v.style.borderRadius="0px";
+    setTimeout(()=>{ lab.style.opacity="1"; }, 230);
+  });
+  vibrate(12);
+  setTimeout(()=>{ setTheme(t); go("archive"); }, 640);
+  setTimeout(()=>{ v.style.opacity="0"; lab.style.opacity="0"; }, 940);
+  setTimeout(()=>{ v.style.transition="none"; v.style.width="0px"; v.style.height="0px"; }, 1600);
+}
+
+/* =========================================================================
+   7. FASE 4 — ARCHIVIO
+   ========================================================================= */
+function numbering(t){
+  const m={};
+  forTheme(t).slice()
+    .sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt))
+    .forEach((l,i)=>{ m[l.id]=i+1; });
+  return m;
+}
+function shuffleOrder(){
+  const ids=forTheme(state.theme).map(l=>l.id);
+  for(let i=ids.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const tmp=ids[i]; ids[i]=ids[j]; ids[j]=tmp;
+  }
+  state.order=ids;
+}
+function visible(){
+  let a=forTheme(state.theme);
+  if(state.tag!=="tutte") a=a.filter(l=>(l.tag||"senza etichetta")===state.tag);
+  const q=state.q.trim().toLowerCase();
+  if(q) a=a.filter(l=>((l.title||"")+" "+l.body+" "+(l.author||"")+" "+(l.tag||"")).toLowerCase().indexOf(q)>-1);
+  if(state.sort==="recenti"){
+    a.sort((x,y)=>new Date(y.createdAt)-new Date(x.createdAt));
+  } else if(state.sort==="risposte"){
+    a.sort((x,y)=>(repsOf(y).length-repsOf(x).length) || (new Date(y.createdAt)-new Date(x.createdAt)));
+  } else {
+    if(!state.order || state.order.length!==forTheme(state.theme).length) shuffleOrder();
+    const o=state.order;
+    a.sort((x,y)=>o.indexOf(x.id)-o.indexOf(y.id));
+  }
+  return a;
+}
+function renderArc(){
+  const t=state.theme; if(!t) return;
+  state.nums=numbering(t);
+  const all=forTheme(t);
+  const nr=all.reduce((s,l)=>s+repsOf(l).length,0);
+  $("#arcTitle").textContent=themeLabel(t);
+  $("#arcCount").textContent=all.length+" lettere · "+nr+" risposte";
+  renderTags();
+  const list=visible();
+  $("#arcMain").innerHTML = list.length
+    ? (state.view==="muro" ? wallHTML(list) : schedHTML(list))
+    : '<p class="empty">Nessuna lettera con questo filtro.<br>Prova un\'altra etichetta, o scrivine una tu.</p>';
+}
+
+/* --- vista MURO: fogli impilati in prospettiva ---------------------------- */
+function wallHTML(list){
+  const items=list.map((l,i)=>{
+    const rc=repsOf(l).length;
+    const cls=["sheet"];
+    if(rc>=3) cls.push("s3"); else if(rc===0) cls.push("s1");
+    if(state.nums[l.id]%5===0) cls.push("fill");
+    if(l.id===state.freshId) cls.push("fresh");
+    const meta=when(l.createdAt)+(rc? " · "+rc+(rc===1?" risposta":" risposte") : "");
+    return '<article class="'+cls.join(" ")+'" style="--x:'+((i%7)*8)+'" data-id="'+l.id+
+      '" tabindex="0" role="button" aria-label="Apri la lettera: '+esc(l.title||"senza titolo")+'">'+
+      '<div class="sheet-top"><span>'+pad3(state.nums[l.id]||0)+'</span><span class="dot"></span><span>'+
+      esc(l.tag||"senza etichetta")+'</span></div>'+
+      '<h3 class="sheet-title">'+esc(l.title||"Senza titolo")+'</h3>'+
+      '<p class="sheet-ex">'+esc(excerpt(l.body,155))+'</p>'+
+      '<div class="sheet-bot"><span>'+esc(l.author||"anonimo")+'</span><span>'+meta+'</span></div>'+
+      '<span class="sheet-plus" aria-hidden="true">+</span>'+
+      '</article>';
+  }).join("");
+  return '<div class="wall"><span class="wall-rail">ultime lettere</span>'+
+         '<div class="wall-list">'+items+'</div></div>';
+}
+
+/* --- vista SCHEDARIO: cassetti alfabetici -------------------------------- */
+function schedHTML(list){
+  const groups={};
+  list.forEach(l=>{
+    let k=(l.title||l.author||"?").trim().charAt(0).toUpperCase();
+    if(!/[A-ZÀ-Ý]/.test(k)) k="#";
+    if(!groups[k]) groups[k]=[];
+    groups[k].push(l);
+  });
+  const keys=Object.keys(groups).sort();
+  let n=0;
+  const body=keys.map(k=>{
+    const rows=groups[k].map(l=>{
+      const alt=((n++)%2)===1 ? " alt" : "";
+      return '<button class="sched-row'+alt+'" data-id="'+l.id+'">'+
+        '<span class="n">'+pad3(state.nums[l.id]||0)+'</span>'+
+        '<span class="t">'+esc(l.title||"senza titolo")+'</span>'+
+        '<span class="a">'+esc(l.author||"anonimo")+'</span></button>';
+    }).join("");
+    return '<div class="sched-g"><div class="sched-tab">'+k+' <i>'+pad3(groups[k].length)+'</i></div>'+rows+'</div>';
+  }).join("");
+  return '<div class="sched">'+body+'<div class="sched-base"></div></div>'+
+         '<span class="sched-label">archivio: '+esc(themeLabel(state.theme))+'</span>';
+}
+
+/* --- etichette con contatore -------------------------------------------- */
+function renderTags(){
+  const t=state.theme, all=forTheme(t), counts={};
+  (TAGS[t]||[]).forEach(k=>{ counts[k]=0; });
+  all.forEach(l=>{
+    const k=l.tag||"senza etichetta";
+    counts[k]=(counts[k]||0)+1;
+  });
+  const rest=Object.keys(counts).map(k=>[k,counts[k]]).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  const rows=[["tutte",all.length]].concat(rest);
+  $("#tags").innerHTML=rows.map(r=>{
+    const k=r[0], c=r[1];
+    const fs=(k==="tutte") ? 18 : Math.min(21, 11.5+c*1.4);
+    return '<button class="tag'+(state.tag===k?" on":"")+'" data-tag="'+esc(k)+
+      '" style="font-size:'+fs.toFixed(1)+'px">'+esc(k)+'<sup>'+c+'</sup></button>';
+  }).join("");
+}
+function tickClock(){
+  const d=new Date();
+  const dd=$("#tickD"), tt=$("#tickT");
+  if(dd) dd.textContent=d.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
+  if(tt) tt.textContent=d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+}
+
+/* =========================================================================
+   8. MODALI — LEGGERE, RISPONDERE, SCRIVERE
+   ========================================================================= */
+let modalOpen=null;
+function openModal(sel){
+  const m=$(sel); if(!m) return;
+  state.lastFocus=document.activeElement;
+  m.classList.add("on");
+  modalOpen=sel;
+  const x=$(".x",m);
+  if(x) setTimeout(()=>{ try{ x.focus(); }catch(e){} }, 70);
+}
+function closeModal(sel){
+  const m=$(sel||modalOpen); if(!m) return;
+  m.classList.remove("on");
+  modalOpen=null;
+  if(state.lastFocus){ try{ state.lastFocus.focus({preventScroll:true}); }catch(e){} }
+}
+function renderReps(l){
+  const r=repsOf(l);
+  $("#rRepH").textContent = r.length
+    ? (r.length===1 ? "1 risposta" : r.length+" risposte")
+    : "nessuna risposta, per ora";
+  $("#rReps").innerHTML=r.map(x=>
+    '<div class="rep"><p>'+esc(x.body).replace(/\n/g,"<br>")+'</p><i>'+
+    esc(x.author||"anonimo")+' · '+when(x.createdAt)+'</i></div>').join("");
+}
+function openReader(id){
+  const l=byId(id); if(!l) return;
+  state.openId=id;
+  $("#rTop").textContent=pad3(state.nums[id]||0)+" · "+(l.tag||"senza etichetta")+" · "+when(l.createdAt);
+  $("#rTitle").textContent=l.title||"Senza titolo";
+  $("#rBody").innerHTML=paras(l.body);
+  $("#rSign").textContent="— "+(l.author||"anonimo")+", "+fullDate(l.createdAt);
+  renderReps(l);
+  $("#repBody").value=""; $("#repCount").textContent="0 / 600"; $("#repErr").textContent="";
+  $("#repCount").classList.remove("warn");
+  navBtns();
+  openModal("#reader");
+}
+function navBtns(){
+  const list=visible().map(l=>l.id), i=list.indexOf(state.openId);
+  $("#rPrev").disabled = i<=0;
+  $("#rNext").disabled = i<0 || i>=list.length-1;
+}
+function step(d){
+  const list=visible().map(l=>l.id), i=list.indexOf(state.openId);
+  const j=i+d;
+  if(j>=0 && j<list.length) openReader(list[j]);
+}
+function openWriter(){
+  state.wTag=null;
+  $("#wTheme").textContent=themeLabel(state.theme);
+  $("#wTit").value=""; $("#wBody").value=""; $("#wAuth").value="";
+  $("#wCount").textContent="0 / 1200"; $("#wCount").classList.remove("warn");
+  $("#wErr").textContent="";
+  $("#wCare").textContent = state.theme==="paura"
+    ? "Quello che scrivi resta anonimo. Se stai attraversando un momento difficile, dirlo a qualcuno di cui ti fidi è già un modo di cominciare."
+    : "Quello che scrivi resta anonimo. Non serve che sia bella: serve che sia vera.";
+  $("#wChips").innerHTML=(TAGS[state.theme]||[]).map(k=>
+    '<button type="button" class="chip" data-chip="'+esc(k)+'">'+esc(k)+'</button>').join("");
+  openModal("#writer");
+  setTimeout(()=>{ try{ $("#wBody").focus(); }catch(e){} }, 260);
+}
+function newId(){ return "u"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function submitLetter(e){
+  e.preventDefault();
+  const body=$("#wBody").value.trim();
+  if(body.length<20){
+    $("#wErr").textContent="Scrivi almeno qualche riga: anche due frasi vanno bene.";
+    return;
+  }
+  const l={
+    id:newId(), theme:state.theme,
+    author:($("#wAuth").value.trim()||"anonimo").slice(0,24),
+    title:$("#wTit").value.trim().slice(0,60),
+    body:body.slice(0,1200),
+    tag:state.wTag||"senza etichetta",
+    createdAt:new Date().toISOString(),
+    replies:[]
+  };
+  state.mine.push(l);
+  saveStore();
+  closeModal("#writer");
+  state.tag="tutte"; state.sort="recenti"; state.q=""; $("#q").value="";
+  state.freshId=l.id;
+  syncSegs();
+  renderArc();
+  toast("La tua lettera è nell’archivio.");
+  vibrate(20);
+  setTimeout(()=>{
+    const el=$('[data-id="'+l.id+'"]', $("#arcMain"));
+    if(el) el.scrollIntoView({behavior:"smooth",block:"center"});
+  }, 260);
+  setTimeout(()=>{ state.freshId=null; }, 1600);
+}
+function submitReply(e){
+  e.preventDefault();
+  const l=byId(state.openId); if(!l) return;
+  const body=$("#repBody").value.trim();
+  if(body.length<3){ $("#repErr").textContent="Scrivi qualcosa prima di pubblicare."; return; }
+  if(!state.reps[l.id]) state.reps[l.id]=[];
+  state.reps[l.id].push({id:newId(), letterId:l.id, author:"anonimo", body:body.slice(0,600), createdAt:new Date().toISOString()});
+  saveStore();
+  $("#repBody").value=""; $("#repCount").textContent="0 / 600"; $("#repErr").textContent="";
+  renderReps(l);
+  renderArc();
+  toast("Risposta pubblicata.");
+}
+
+/* =========================================================================
+   9. COLLEGAMENTI E AVVIO
+   ========================================================================= */
+function syncSegs(){
+  $$("#segView button").forEach(b=>b.classList.toggle("on", b.getAttribute("data-view")===state.view));
+  $$("#segSort button").forEach(b=>b.classList.toggle("on", b.getAttribute("data-sort")===state.sort));
+}
+function counter(sel,out,max){
+  const el=$(sel), o=$(out);
+  if(!el||!o) return;
+  el.addEventListener("input",()=>{
+    const n=el.value.length;
+    o.textContent=n+" / "+max;
+    o.classList.toggle("warn", n>max-60);
+  });
+}
+
+/* fase 1 -> 2 */
+$("#btnEnter").addEventListener("click", ()=>{ audio.init(); go("reveal"); });
+/* fase 2 */
+$("#btnSkip").addEventListener("click", ()=>{ if(!rev.done) rev.finish(); });
+$("#btnSnd").addEventListener("click", ()=>audio.toggle());
+/* fase 3 */
+$$(".choice-card").forEach(c=>c.addEventListener("click", ()=>pick(c)));
+/* navigazione generica (logo, torna indietro) */
+$$("[data-nav]").forEach(b=>b.addEventListener("click", e=>{
+  e.preventDefault();
+  go(b.getAttribute("data-nav"));
+}));
+
+/* fase 4 — archivio */
+$("#arcMain").addEventListener("click", e=>{
+  const el=e.target.closest("[data-id]");
+  if(el) openReader(el.getAttribute("data-id"));
+});
+$("#arcMain").addEventListener("keydown", e=>{
+  if(e.key!=="Enter" && e.key!==" ") return;
+  const el=e.target.closest && e.target.closest(".sheet");
+  if(el){ e.preventDefault(); openReader(el.getAttribute("data-id")); }
+});
+$("#tags").addEventListener("click", e=>{
+  const b=e.target.closest("[data-tag]"); if(!b) return;
+  state.tag=b.getAttribute("data-tag");
+  renderArc();
+});
+$("#segView").addEventListener("click", e=>{
+  const b=e.target.closest("[data-view]"); if(!b) return;
+  state.view=b.getAttribute("data-view"); syncSegs(); renderArc();
+});
+$("#segSort").addEventListener("click", e=>{
+  const b=e.target.closest("[data-sort]"); if(!b) return;
+  const s=b.getAttribute("data-sort");
+  if(s==="casuale") shuffleOrder();
+  state.sort=s; syncSegs(); renderArc();
+});
+let qT=null;
+$("#q").addEventListener("input", ()=>{
+  clearTimeout(qT);
+  qT=setTimeout(()=>{ state.q=$("#q").value; renderArc(); }, 180);
+});
+$("#btnWrite").addEventListener("click", openWriter);
+
+/* modali */
+$$("[data-close]").forEach(b=>b.addEventListener("click", ()=>closeModal()));
+$("#fRep").addEventListener("submit", submitReply);
+$("#fLet").addEventListener("submit", submitLetter);
+$("#rPrev").addEventListener("click", ()=>step(-1));
+$("#rNext").addEventListener("click", ()=>step(1));
+$("#wChips").addEventListener("click", e=>{
+  const c=e.target.closest("[data-chip]"); if(!c) return;
+  const k=c.getAttribute("data-chip");
+  state.wTag = (state.wTag===k) ? null : k;
+  $$("#wChips .chip").forEach(x=>x.classList.toggle("on", x.getAttribute("data-chip")===state.wTag));
+});
+counter("#wBody","#wCount",1200);
+counter("#repBody","#repCount",600);
+
+/* svuotamento in due passaggi (evita cancellazioni per sbaglio) */
+let wipeArmed=false, wipeT=null;
+$("#btnWipe").addEventListener("click", ()=>{
+  const b=$("#btnWipe");
+  if(!wipeArmed){
+    wipeArmed=true;
+    b.textContent="sicuro? tocca di nuovo";
+    wipeT=setTimeout(()=>{ wipeArmed=false; b.textContent="svuota archivio locale"; }, 4500);
+    return;
+  }
+  clearTimeout(wipeT); wipeArmed=false;
+  b.textContent="svuota archivio locale";
+  state.mine=[]; state.reps={}; state.order=null;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  renderArc(); choiceCounts();
+  toast("Archivio locale svuotato. Restano le lettere di partenza.");
+});
+
+/* tastiera */
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape" && modalOpen){ closeModal(); return; }
+  if(modalOpen==="#reader"){
+    const tag=(e.target.tagName||"").toUpperCase();
+    if(tag==="TEXTAREA"||tag==="INPUT") return;
+    if(e.key==="ArrowLeft") step(-1);
+    if(e.key==="ArrowRight") step(1);
+  }
+});
+
+/* -------------------------------------------------------------------------
+   Avvio. Parametri utili per collegare più bottoni da Figma:
+     ?fase=inizio | gratta | scelta | archivio
+     ?tema=amore | paura        (usato con ?fase=archivio)
+     ?reset=1                   (svuota le lettere salvate su questo device)
+   ------------------------------------------------------------------------- */
+const ALIAS={
+  inizio:"landing", landing:"landing", home:"landing",
+  gratta:"reveal", reveal:"reveal",
+  scelta:"choice", choice:"choice",
+  archivio:"archive", archive:"archive"
+};
+function boot(){
+  loadStore();
+  rev.mount();
+  syncSegs();
+  tickClock();
+  setInterval(tickClock,1000);
+  choiceCounts();
+
+  const p=new URLSearchParams(location.search);
+  if(p.get("reset")==="1"){
+    state.mine=[]; state.reps={};
+    try{ localStorage.removeItem(KEY); }catch(e){}
+  }
+  let f=(p.get("fase")||p.get("start")||"").toLowerCase();
+  let t=(p.get("tema")||p.get("theme")||"").toLowerCase();
+  if(!f && location.hash){
+    const parts=location.hash.replace(/^#\/?/,"").split("/");
+    f=(parts[0]||"").toLowerCase();
+    if(!t) t=(parts[1]||"").toLowerCase();
+  }
+  if(t==="love") t="amore";
+  if(t==="fear") t="paura";
+  const scene=ALIAS[f]||"landing";
+
+  if(scene==="archive"){
+    if(t==="amore"||t==="paura"){ setTheme(t); go("archive"); }
+    else { go("choice"); }
+  } else {
+    go(scene);
+  }
+
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(()=>{
+      if(state.scene==="reveal" && rev.ratio<.02) rev.paint();
+    }).catch(()=>{});
+  }
+}
+boot();
+</script>
+</body>
+</html>
