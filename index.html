@@ -266,6 +266,8 @@ body[data-theme="paura"] .lm-heart{background:#EC1C24}
   font-family:var(--font-mono);font-size:clamp(9.5px,2.5vw,11px);letter-spacing:.1em;text-transform:uppercase;
 }
 .arc-sub .everysec{opacity:.45}
+.arc-sub #syncLab{opacity:.45;text-align:center;flex:1 1 auto;min-width:0}
+@media(max-width:620px){.arc-sub #syncLab{text-align:left;flex-basis:100%;order:3}}
 
 .arc-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:13px 0 4px}
 .btn{
@@ -565,6 +567,7 @@ body[data-theme="paura"] .lm-heart{background:#EC1C24}
         <h2 class="arc-title" id="arcTitle">lettere</h2>
         <div class="arc-sub">
           <span id="arcCount"></span>
+          <span id="syncLab"></span>
           <span class="everysec">ogni : secondo</span>
         </div>
         <div class="arc-tools">
@@ -667,6 +670,13 @@ body[data-theme="paura"] .lm-heart{background:#EC1C24}
 
 <script>
 "use strict";
+/* =========================================================================
+   0. ARCHIVIO CONDIVISO (facoltativo)
+   Incolla qui l'indirizzo che finisce con /exec dell'app Google (vedi README).
+   Se resta vuoto la pagina funziona come prima: le lettere scritte restano
+   solo sul dispositivo di chi le scrive.
+   ========================================================================= */
+const ARCHIVIO_URL = "";
 /* =========================================================================
    1. DATI
    Le lettere di partenza sono scritte nel file (l'archivio non nasce vuoto).
@@ -776,7 +786,8 @@ const KEY = "postdelcuore.filofobia.v1";
 
 const state = {
   scene:"reveal", theme:null, view:"registro", sort:"recenti", tag:"tutte", q:"",
-  mine:[], reps:{}, order:null, nums:{}, openId:null, lastFocus:null, wTag:null
+  mine:[], reps:{}, order:null, nums:{}, openId:null, lastFocus:null, wTag:null,
+  remote:{lettere:[], risposte:{}}, sync:"spento"
 };
 
 const $  = (s,r)=> (r||document).querySelector(s);
@@ -834,9 +845,9 @@ function saveStore(){
   try{ localStorage.setItem(KEY, JSON.stringify({mine:state.mine, reps:state.reps})); }
   catch(e){ toast("Non riesco a salvare su questo dispositivo."); }
 }
-function letters(){ return SEEDS.concat(state.mine); }
+function letters(){ return SEEDS.concat(state.remote.lettere, state.mine); }
 function forTheme(t){ return letters().filter(l=>l.theme===t); }
-function repsOf(l){ return (l.replies||[]).concat(state.reps[l.id]||[]); }
+function repsOf(l){ return (l.replies||[]).concat(state.remote.risposte[l.id]||[], state.reps[l.id]||[]); }
 function byId(id){ return letters().filter(l=>l.id===id)[0]; }
 function themeLabel(t){ return t==="amore" ? "lettere d’amore" : "lettere sulla paura"; }
 
@@ -901,7 +912,10 @@ function go(name){
   if(prev==="reveal" && name!=="reveal") rev.stop();
   if(name==="reveal") rev.start();
   if(name==="reveal" || name==="choice"){ setTheme(null); }
-  if(name==="archive") renderArc();
+  if(name==="archive"){
+    renderArc();
+    if(nube.attiva()) nube.carica().then(ok=>{ if(ok && state.scene==="archive") renderArc(); });
+  }
   const sec=$(SCENES[name]);
   if(sec){ sec.setAttribute("tabindex","-1"); try{ sec.focus({preventScroll:true}); }catch(e){} }
   syncUrl();
@@ -1206,6 +1220,7 @@ function renderArc(){
   const nr=all.reduce((s,l)=>s+repsOf(l).length,0);
   $("#arcTitle").textContent=themeLabel(t);
   $("#arcCount").textContent=all.length+" lettere · "+nr+" risposte";
+  segnale();
   renderTags();
   const list=visible();
   $("#arcMain").innerHTML = list.length
@@ -1452,7 +1467,7 @@ function openWriter(){
 }
 function newId(){ return "u"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
-function submitLetter(e){
+async function submitLetter(e){
   e.preventDefault();
   const body=$("#wBody").value.trim();
   if(body.length<20){
@@ -1468,35 +1483,158 @@ function submitLetter(e){
     createdAt:new Date().toISOString(),
     replies:[]
   };
+  /* mostrata subito, come se fosse già arrivata */
   state.mine.push(l);
   saveStore();
   closeModal("#writer");
   state.tag="tutte"; state.sort="recenti"; state.q=""; $("#q").value="";
   syncSegs();
   renderArc();
-  toast("La tua lettera è nell’archivio.");
   vibrate(20);
   setTimeout(()=>{
     const el=$('[data-id="'+l.id+'"]', $("#arcMain"));
     if(el) el.scrollIntoView({behavior:"smooth",block:"center"});
   }, 260);
+
+  if(!nube.attiva()){
+    toast("La tua lettera è nell’archivio.");
+    return;
+  }
+  toast("Sto mandando la tua lettera all’archivio…");
+  try{
+    const d=await nube.mandaConRiserva({tipo:"lettera", theme:l.theme, title:l.title,
+      body:l.body, author:l.author, tag:l.tag});
+    if(d.cieco) await new Promise(r=>setTimeout(r,1400));
+    state.mine=state.mine.filter(x=>x.id!==l.id);
+    saveStore();
+    await nube.carica();
+    renderArc();
+    toast("La tua lettera è nell’archivio, la vedono tutti.");
+  }catch(err){
+    toast("Salvata su questo dispositivo: l’archivio condiviso non risponde.");
+  }
 }
-function submitReply(e){
+async function submitReply(e){
   e.preventDefault();
   const l=byId(state.openId); if(!l) return;
   const body=$("#repBody").value.trim();
   if(body.length<3){ $("#repErr").textContent="Scrivi qualcosa prima di pubblicare."; return; }
+  const rid=newId();
   if(!state.reps[l.id]) state.reps[l.id]=[];
-  state.reps[l.id].push({id:newId(), letterId:l.id, author:"anonimo", body:body.slice(0,600), createdAt:new Date().toISOString()});
+  state.reps[l.id].push({id:rid, letterId:l.id, author:"anonimo", body:body.slice(0,600), createdAt:new Date().toISOString()});
   saveStore();
   $("#repBody").value=""; $("#repCount").textContent="0 / 600"; $("#repErr").textContent="";
   renderReps(l);
   renderArc();
-  toast("Risposta pubblicata.");
+
+  if(!nube.attiva()){ toast("Risposta pubblicata."); return; }
+  try{
+    const d=await nube.mandaConRiserva({tipo:"risposta", letterId:l.id, body:body.slice(0,600), author:"anonimo"});
+    if(d.cieco) await new Promise(r=>setTimeout(r,1400));
+    state.reps[l.id]=(state.reps[l.id]||[]).filter(x=>x.id!==rid);
+    if(!state.reps[l.id].length) delete state.reps[l.id];
+    saveStore();
+    await nube.carica();
+    const agg=byId(state.openId);
+    if(agg) renderReps(agg);
+    renderArc();
+    toast("Risposta pubblicata.");
+  }catch(err){
+    toast("Risposta salvata su questo dispositivo: l’archivio non risponde.");
+  }
 }
 
 /* =========================================================================
-   9. COLLEGAMENTI E AVVIO
+   9. ARCHIVIO CONDIVISO — foglio Google via app web
+   La pagina legge tutto l'archivio con una GET e manda le nuove lettere con
+   una POST. Se il foglio non risponde, la lettera resta salvata sul
+   dispositivo e lo diciamo a chi scrive, senza far finta di niente.
+   ========================================================================= */
+const nube = {
+  attiva(){ return /^https:\/\/\S+$/.test(String(ARCHIVIO_URL||"").trim()); },
+
+  async carica(){
+    if(!this.attiva()) return false;
+    if(state.sync==="spento") state.sync="carico";
+    segnale();
+    try{
+      const r = await fetch(ARCHIVIO_URL+"?t="+Date.now(), {method:"GET", cache:"no-store"});
+      const d = await r.json();
+      if(!d || d.ok===false) throw new Error((d && d.errore) || "risposta non valida");
+      state.remote.lettere = Array.isArray(d.lettere)
+        ? d.lettere.filter(l=>l && l.id && l.body && (l.theme==="amore"||l.theme==="paura"))
+        : [];
+      state.remote.risposte = (d.risposte && typeof d.risposte==="object") ? d.risposte : {};
+      state.sync="ok"; segnale();
+      return true;
+    }catch(e){
+      state.sync="errore"; segnale();
+      return false;
+    }
+  },
+
+  /* Content-Type text/plain: evita il preflight CORS, che Apps Script non gestisce */
+  async manda(dati){
+    const r = await fetch(ARCHIVIO_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(dati)
+    });
+    const d = await r.json();
+    if(!d || d.ok!==true) throw new Error((d && d.errore) || "invio rifiutato");
+    return d;
+  },
+  async mandaConRiserva(dati){
+    try{ return await this.manda(dati); }
+    catch(e){
+      /* secondo tentativo alla cieca: parte ma non possiamo leggere la risposta */
+      await fetch(ARCHIVIO_URL, {
+        method:"POST", mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(dati)
+      });
+      return {ok:true, cieco:true};
+    }
+  },
+
+  /* rimanda quello che era rimasto in sospeso su questo dispositivo */
+  async svuotaSospesi(){
+    if(!this.attiva() || !state.mine.length) return;
+    const restano=[];
+    for(const l of state.mine.slice()){
+      try{
+        await this.mandaConRiserva({tipo:"lettera", theme:l.theme, title:l.title,
+          body:l.body, author:l.author, tag:l.tag});
+      }catch(e){ restano.push(l); }
+    }
+    state.mine=restano; saveStore();
+  }
+};
+
+function segnale(){
+  const el=$("#syncLab"); if(!el) return;
+  if(!nube.attiva()){ el.textContent=""; return; }
+  const n=state.remote.lettere.length;
+  el.textContent = state.sync==="ok"     ? "archivio condiviso · "+n+(n===1?" lettera":" lettere")
+                 : state.sync==="carico" ? "sto leggendo l’archivio…"
+                 : state.sync==="errore" ? "archivio non raggiungibile"
+                 : "";
+  el.style.opacity = state.sync==="errore" ? "1" : ".45";
+  el.style.color = state.sync==="errore" ? "var(--accent)" : "";
+}
+
+let ricaricaT=null;
+function avviaRicarica(){
+  clearInterval(ricaricaT);
+  if(!nube.attiva()) return;
+  ricaricaT=setInterval(async ()=>{
+    if(state.scene!=="archive" || document.hidden || modalOpen) return;
+    if(await nube.carica()) renderArc();
+  }, 45000);
+}
+
+/* =========================================================================
+   10. COLLEGAMENTI E AVVIO
    ========================================================================= */
 function syncSegs(){
   $$("#segView button").forEach(b=>b.classList.toggle("on", b.getAttribute("data-view")===state.view));
@@ -1642,6 +1780,13 @@ function boot(){
     else { go("choice"); }
   } else {
     go(scene);
+  }
+
+  avviaRicarica();
+  if(nube.attiva()){
+    nube.svuotaSospesi()
+      .then(()=>nube.carica())
+      .then(ok=>{ if(ok && state.scene==="archive") renderArc(); });
   }
 
   if(document.fonts && document.fonts.ready){

@@ -94,7 +94,86 @@ Sono scelte, non vincoli: si cambiano tutte in poche righe.
 | Moderazione | pubblicazione immediata (prototipo). Vedi nota sotto |
 | Limite caratteri | 1200 per lettera, 600 per risposta, con contatore |
 | Amore e paura separate? | separate come archivi, ma si passa da una all'altra quando si vuole |
-| Backend o mock? | **prototipo front-end**: le 24 lettere di partenza sono nel file, quelle scritte dal pubblico restano in `localStorage` del device |
+| Backend o mock? | entrambi: senza configurazione le lettere restano sul dispositivo; collegando il foglio Google (sezione 4) diventano un archivio condiviso |
+
+---
+
+## 4. Archivio condiviso: il foglio Google
+
+Di serie le lettere restano sul dispositivo di chi scrive. Per raccoglierle
+tutte in un posto solo — senza login per chi visita, e con i dati che restano
+tuoi e scaricabili in CSV — servono cinque minuti.
+
+**1. Crea il foglio.** Su `sheets.new` fai un foglio nuovo, chiamalo
+`post del cuore`. In basso rinomina la prima scheda in **`lettere`** e
+aggiungine una seconda chiamata **`risposte`**.
+
+**2. Metti le intestazioni.** Nella scheda `lettere`, riga 1:
+
+```
+id   tema   titolo   corpo   autore   etichetta   creata   visibile
+```
+
+Nella scheda `risposte`, riga 1:
+
+```
+id   idLettera   corpo   autore   creata   visibile
+```
+
+Se vuoi partire con le 24 lettere già scritte, importa i due file di questa
+cartella: *File > Importa > Carica*, scegli `lettere.csv` (separatore
+punto e virgola, "Sostituisci foglio corrente" sulla scheda giusta) e poi
+`risposte.csv`. Le intestazioni sono già dentro i CSV.
+
+**3. Copia l'ID del foglio.** È il pezzo di indirizzo fra `/d/` e `/edit`:
+`docs.google.com/spreadsheets/d/`**`QUESTO`**`/edit`
+
+**4. Incolla lo script.** Nel foglio: *Estensioni > Apps Script*. Cancella
+tutto e incolla il contenuto di `google-apps-script.gs` (in questa cartella).
+Nella riga `var ID_FOGLIO = '...'` metti l'ID del punto 3. Salva.
+
+**5. Pubblica.** *Distribuisci > Nuova distribuzione > tipo: App web*, con
+**Esegui come: Me** e **Chi ha accesso: Chiunque**. Alla prima volta Google
+chiede l'autorizzazione: è il tuo script sul tuo foglio, accetta. Copia
+l'indirizzo che finisce con **`/exec`**.
+
+**6. Collega la pagina.** In `index.html`, riga 6 circa, c'è:
+
+```js
+const ARCHIVIO_URL = "";
+```
+
+Incolla l'indirizzo `/exec` fra le virgolette, salva, ricarica su GitHub. Fine.
+
+### Come si comporta
+
+- Entrando nell'archivio la pagina legge il foglio; sotto al titolo compare
+  *archivio condiviso · N lettere*. Si aggiorna da sé ogni 45 secondi, quindi
+  in mostra le lettere degli altri appaiono mentre uno guarda.
+- Chi scrive vede la sua lettera subito; poi parte l'invio. Se il foglio non
+  risponde, la lettera **non va persa**: resta sul dispositivo, il messaggio lo
+  dice chiaramente (non finge che sia andata bene) e al successivo caricamento
+  della pagina viene rimandata.
+- **Moderazione**: nella colonna `visibile` scrivi `FALSE` su una riga e quella
+  lettera smette di comparire, senza cancellarla. Cancellare la riga funziona
+  uguale. È il modo più semplice per gestire l'archivio "paura".
+- **Scaricare tutto**: *File > Scarica > Valori separati da virgole*.
+
+### I limiti, detti chiaramente
+
+L'indirizzo `/exec` è pubblico: chiunque lo trovi può inviare righe al foglio.
+Per un progetto di scuola o una mostra va bene, e lo script accetta solo lettere
+e risposte entro i limiti di lunghezza. Se qualcuno ne abusa, da *Distribuisci >
+Gestisci distribuzioni* puoi archiviare la distribuzione e tutto si ferma: la
+pagina torna a funzionare in locale senza rompersi. Le quote gratuite di Apps
+Script (qualche migliaio di richieste al giorno) sono lontanissime dal traffico
+di un progetto come questo.
+
+Se in futuro ti serve qualcosa di più solido — più visitatori insieme,
+cancellazioni, statistiche — la stessa struttura dati funziona identica su
+Supabase: cambia solo l'indirizzo e due righe nella funzione di invio.
+
+---
 
 ### Due cose da valutare prima di una vera messa in mostra
 
@@ -112,7 +191,7 @@ Sono scelte, non vincoli: si cambiano tutte in poche righe.
 
 ---
 
-## 4. Cosa cambiare (dove mettere le mani)
+## 5. Cosa cambiare (dove mettere le mani)
 
 Tutto è dentro `index.html`, in sezioni numerate e commentate.
 
@@ -148,7 +227,7 @@ Tutto è dentro `index.html`, in sezioni numerate e commentate.
 - **Numeri delle lettere.** `001, 002…` assegnati per data di arrivo: la lettera
   numero 1 è la più vecchia dell'archivio, come in uno schedario reale.
 
-## 5. Note tecniche
+## 6. Note tecniche
 
 - Testato in viewport da 360 px a 1280 px, portrait e landscape.
 - Tastiera: `Esc` chiude, `←` `→` sfogliano le lettere, tutto raggiungibile con
